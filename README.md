@@ -77,9 +77,9 @@ npm run dev
 ```
 
 or run 
-'''bash
+```bash
 cd ..
-'''
+```
 to go back to the main folder
 
 The site is at http://localhost:3000.
