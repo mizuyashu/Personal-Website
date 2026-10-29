@@ -76,7 +76,7 @@ npm install
 npm run dev
 ```
 
-or run 
+or run it in the original terminal by running 
 ```bash
 cd ..
 ```
