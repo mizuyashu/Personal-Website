@@ -51,7 +51,7 @@ cd backend
 python -m pip install -r requirements.txt
 python manage.py migrate
 python manage.py createsuperuser
-python manage.py runserver 8001
+python manage.py runserver 8000
 ```
 
 macOS / Linux:
@@ -63,10 +63,10 @@ cd backend
 python -m pip install -r requirements.txt
 python manage.py migrate
 python manage.py createsuperuser
-python manage.py runserver 8001
+python manage.py runserver 8000
 ```
 
-The admin is at http://127.0.0.1:8001/admin/.
+The admin is at http://127.0.0.1:8000/admin/.
 
 ### 2. Frontend (Next.js)
 
@@ -85,7 +85,7 @@ The site is at http://localhost:3000.
 Secrets and config are not committed. Create these files locally:
 
 - `backend/.env` (e.g. `SECRET_KEY`, `DEBUG`)
-- `frontend/.env.local` (e.g. `NEXT_PUBLIC_API_URL=http://127.0.0.1:8001`)
+- `frontend/.env.local` (e.g. `NEXT_PUBLIC_API_URL=http://127.0.0.1:8000`)
 
 ## Notes
 
