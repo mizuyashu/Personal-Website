@@ -36,8 +36,8 @@ Michael's Website/
 Clone the repo:
 
 ```bash
-git clone https://github.com/mizuyashu/YOUR-REPO-NAME.git
-cd YOUR-REPO-NAME
+git clone https://github.com/mizuyashu/Personal-Website.git
+cd Personal-Website
 ```
 
 ### 1. Backend (Django)
@@ -50,7 +50,6 @@ venv\Scripts\activate
 cd backend
 python -m pip install -r requirements.txt
 python manage.py migrate
-python manage.py createsuperuser
 python manage.py runserver 8000
 ```
 
@@ -62,7 +61,6 @@ source venv/bin/activate
 cd backend
 python -m pip install -r requirements.txt
 python manage.py migrate
-python manage.py createsuperuser
 python manage.py runserver 8000
 ```
 
@@ -78,6 +76,12 @@ npm install
 npm run dev
 ```
 
+or run 
+'''bash
+cd ..
+'''
+to go back to the main folder
+
 The site is at http://localhost:3000.
 
 ## Environment variables
@@ -90,7 +94,8 @@ Secrets and config are not committed. Create these files locally:
 ## Notes
 
 - `venv/`, `node_modules/`, `.next/`, `db.sqlite3`, and `.env` files are git-ignored and must be recreated locally using the steps above.
-- The local database (`db.sqlite3`) is not in the repo, so run `migrate` and `createsuperuser` after cloning.
+- The local database (`db.sqlite3`) is not in the repo, so run `python manage.py migrate`
+- To log into the admin at `/admin/`, also run `python manage.py createsuperuser`. This is optional until you want to add content.
 
 ## Deployment (planned)
 
