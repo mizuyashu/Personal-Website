@@ -2,68 +2,64 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main>
+      <section className="bg-[#f5f1ea] px-8 py-24">
+        <div className="mx-auto grid max-w-6xl gap-16 md:grid-cols-2">
+          <div>
+            <div className="mb-6 flex items-center gap-4">
+              <span className="h-0.5 w-12 bg-red-600" />
+              <span className="text-sm font-bold uppercase tracking-[0.3em] text-[#0a2a52]">
+                About Me
+              </span>
+            </div>
+            <h1 className="text-4xl font-black leading-[0.95] text-[#0a2a52]">
+              First year at Queens University
+            </h1>
+          </div>
+          <div className="space-y-4">
+            <p className="text-2xl font-bold text-[#0a2a52]">Hi, my name is Michael. I am currently studying Computer Engineering at the University of Queens.</p>
+            <p className="text-gray-600">I'm currently in 3 design teams and one club for videography for engsoc</p>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+      <h1 className="text-5xl text-black font-bold">Hi</h1>
+      <p className="text-lg text-black">Welcome to my personal website.</p>
+      
+      <div className="columns-3xs gap-4">
+        <Image className="aspect-3/2 w-full object-cover mb-4" src="/Queens logo.jpg" alt="queens" width={600} height={400}/>
+        <Image className="aspect-3/2 w-full object-cover mb-4" src="/qvex_logo.jpg" alt="qvex" width={600} height={400}/>
+        <Image className="aspect-3/2 w-full object-cover mb-4" src="/QSDT_Logo-1.jpg" alt="solar" width={600} height={400} />
+        <Image className="aspect-3/2 w-full object-cover mb-4" src="/QBMET_Logo-1.jpg" alt="qbmet" width={600} height={400} />
+        <Image className="aspect-3/2 w-full object-cover mb-4" src="/engsoc logo.jpg" alt="engsoc" width={600} height={400} />
+      
+      </div>  
+    
+      <section className="bg-[#031d3a] px-8 py-24 text-white">
+        <div className="mx-auto max-w-6xl">
+          <h2 className="mb-12 text-5xl font-black">Section title.</h2>
+          <div className="grid gap-px md:grid-cols-2">
+            <div className="bg-[#052a50] p-10">
+              <p className="text-sm font-bold uppercase tracking-widest text-slate-300">Label</p>
+              <p className="mt-8 text-7xl font-black">$60 or nums here ig</p>
+            </div>
+            <div className="bg-[#0b3a66] p-10">
+              <p className="text-sm font-bold uppercase tracking-widest text-slate-300">Label</p>
+              <p className="mt-8 text-7xl font-black">graph maybe</p>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section className="bg-[#f5f1ea] px-8 py-24">
+        <div className="mx-auto max-w-6xl">
+          <h2 className="text-6xl font-black text-[#0a2a52]">
+            Something here.
+            <br />
+            <span className="text-red-600">Another thing ig.</span>
+          </h2>
+          <p className="flex justify-end mt-10 max-w-2xl text-gray-600 md:ml-auto">Paragraph pushed to the right.</p>
+        </div>
+      </section>
+    </main>
   );
 }
