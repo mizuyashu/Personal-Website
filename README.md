@@ -1,6 +1,6 @@
 # Personal Website
 
-A personal website built with **Next.js** (frontend) and **Django + Django REST Framework** (backend API and admin panel).
+A personal website built with **Next.js** (frontend) and **Django + Django REST Framework** (backend API and admin panel) that is currently a work in progress.
 
 ## Project structure
 
