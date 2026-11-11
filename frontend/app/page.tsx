@@ -18,7 +18,7 @@ export default function Home() {
           </div>
           <div className="space-y-4">
             <p className="text-2xl font-bold text-[#0a2a52]">Hi, my name is Michael. I am currently studying Computer Engineering at the University of Queens.</p>
-            <p className="text-gray-600">I'm currently in 4 design teams and one club for videography for engsoc</p>
+            <p className="text-gray-600">Im currently in 4 design teams and one club for videography for engsoc</p>
           </div>
         </div>
       </section>
@@ -26,12 +26,12 @@ export default function Home() {
       <p className="text-lg text-black">Welcome to my personal website.</p>
       
       <div className="columns-3xs gap-4">
-        <Image className="aspect-3/2 w-full object-cover mb-4" src="/Queens logo.jpg" alt="queens" width={600} height={400}/>
-        <Image className="aspect-3/2 w-full object-cover mb-4" src="/qvex_logo.jpg" alt="qvex" width={600} height={400}/>
+        <Image className="aspect-3/2 w-full object-cover mb-4" src="/Queens.jpg" alt="queens" width={600} height={400}/>
+        <Image className="aspect-3/2 w-full object-cover mb-4" src="/qvex.jpg" alt="qvex" width={600} height={400}/>
         <Image className="aspect-3/2 w-full object-cover mb-4" src="/QSDT_Logo-1.jpg" alt="solar" width={600} height={400} />
         <Image className="aspect-3/2 w-full object-cover mb-4" src="/QBMET_Logo-1.jpg" alt="qbmet" width={600} height={400} />
         <Image src="/qret.jpg" alt="qret" width={600} height={400} />
-        <Image className="aspect-3/2 w-full object-cover mb-4" src="/engsoc logo.jpg" alt="engsoc" width={600} height={400} />
+        <Image className="aspect-3/2 w-full object-cover mb-4" src="/engsoc.jpg" alt="engsoc" width={600} height={400} />
       
       </div> 
     
