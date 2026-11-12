@@ -40,7 +40,14 @@ export default function Home() {
         
         <div className="columns-3xs gap-4">
           
-          <Image src="/logos/qret.jpg" alt="qret" width={600} height={400} />
+          <Image
+            className="aspect-3/2 w-full object-cover mb-4"
+            src="/LOGOS/qret.jpg"
+            alt="qret"
+            width={600}
+            height={400}
+            unoptimized
+          />
         
         </div> 
       
