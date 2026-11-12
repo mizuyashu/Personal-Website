@@ -18,7 +18,7 @@ Michael's Website/
 ├── .gitignore
 └── README.md
 ```
-
+  
 ## How it works
 
 - Django stores content in a database and exposes it as JSON at `/api/...`.
