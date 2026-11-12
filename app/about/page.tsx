@@ -42,7 +42,7 @@ export default function Home() {
           
           <Image
             className="aspect-3/2 w-full object-cover mb-4"
-            src="/LOGOS/qret.jpg"
+            src="/logo/qret.jpg"
             alt="qret"
             width={600}
             height={400}
