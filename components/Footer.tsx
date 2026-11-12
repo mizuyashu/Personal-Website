@@ -29,7 +29,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="border-t border-gray-600 mt-8 pt-4 text-center text-gray-300">
-          <p>&copy; 2025 Queens University Solar Design Team. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()}. my rights reserved hehe.</p>
         </div>
       </div>
     </footer>
