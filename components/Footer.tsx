@@ -5,18 +5,16 @@ export default function Footer() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-xl font-bold mb-4">Queens University Solar Design Team</h3>
+            <h3 className="text-xl font-bold mb-4">hehe</h3>
             <p className="text-gray-300">
-              Promoting solar energy education and innovation at Queens University.
+              something should go here ig.
             </p>
           </div>
           <div>
             <h3 className="text-xl font-bold mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              <li><a href="/about" className="hover:text-solar-yellow transition">About Us</a></li>
-              <li><a href="/team" className="hover:text-solar-yellow transition">Our Team</a></li>
+              <li><a href="/about" className="hover:text-solar-yellow transition">About me</a></li>
               <li><a href="/projects" className="hover:text-solar-yellow transition">Projects</a></li>
-              <li><a href="/dashboard" className="hover:text-solar-yellow transition">Live Data</a></li>
             </ul>
           </div>
           <div>
