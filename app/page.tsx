@@ -34,8 +34,13 @@ export default function Home() {
           <Image className="aspect-3/2 w-full object-cover mb-4" src="/logo/qvex.jpg" alt="qvex" width={600} height={400}/>
           <Image className="aspect-3/2 w-full object-cover mb-4" src="/logo/QSDT_Logo-1.jpg" alt="solar" width={600} height={400} />
           <Image className="aspect-3/2 w-full object-cover mb-4" src="/logo/QBMET_Logo-1.jpg" alt="qbmet" width={600} height={400} />
-          <Image className="aspect-3/2 w-full object-cover mb-4" src="/logos/qret.jpg" alt="qret" width={600} height={400} />
           <Image className="aspect-3/2 w-full object-cover mb-4" src="/logo/engsoc.jpg" alt="engsoc" width={600} height={400} />
+        
+        </div> 
+        
+        <div className="columns-3xs gap-4">
+          
+          <Image src="/logos/qret.jpg" alt="qret" width={600} height={400} />
         
         </div> 
       

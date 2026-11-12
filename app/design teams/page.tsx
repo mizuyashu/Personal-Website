@@ -30,12 +30,17 @@ export default function Home() {
         <p className="text-lg text-black">Welcome to my personal website.</p>
         
         <div className="columns-3xs gap-4">
-          <Image className="aspect-3/2 w-full object-cover mb-4" src="/Queens.jpg" alt="queens" width={600} height={400}/>
-          <Image className="aspect-3/2 w-full object-cover mb-4" src="/qvex.jpg" alt="qvex" width={600} height={400}/>
-          <Image className="aspect-3/2 w-full object-cover mb-4" src="/QSDT_Logo-1.jpg" alt="solar" width={600} height={400} />
-          <Image className="aspect-3/2 w-full object-cover mb-4" src="/QBMET_Logo-1.jpg" alt="qbmet" width={600} height={400} />
-          <Image src="/qret.jpg" alt="qret" width={600} height={400} />
-          <Image className="aspect-3/2 w-full object-cover mb-4" src="/engsoc.jpg" alt="engsoc" width={600} height={400} />
+          <Image className="aspect-3/2 w-full object-cover mb-4" src="/logo/Queens.jpg" alt="queens" width={600} height={400}/>
+          <Image className="aspect-3/2 w-full object-cover mb-4" src="/logo/qvex.jpg" alt="qvex" width={600} height={400}/>
+          <Image className="aspect-3/2 w-full object-cover mb-4" src="/logo/QSDT_Logo-1.jpg" alt="solar" width={600} height={400} />
+          <Image className="aspect-3/2 w-full object-cover mb-4" src="/logo/QBMET_Logo-1.jpg" alt="qbmet" width={600} height={400} />
+          <Image className="aspect-3/2 w-full object-cover mb-4" src="/logo/engsoc.jpg" alt="engsoc" width={600} height={400} />
+        
+        </div> 
+        
+        <div className="columns-3xs gap-4">
+          
+          <Image src="/logos/qret.jpg" alt="qret" width={600} height={400} />
         
         </div> 
       
