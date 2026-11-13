@@ -1,11 +1,8 @@
 import Image from "next/image";
-import Navbar from "@/components/Navbar";
-import Footer from '@/components/Footer'
 
 export default function Home() {
   return (
     <>
-      <Navbar/>
       <main>
         <section className="bg-[#f5f1ea] px-8 py-24">
           <div className="mx-auto grid max-w-6xl gap-16 md:grid-cols-2">
@@ -71,7 +68,6 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <Footer />
     </>
   )
 }
