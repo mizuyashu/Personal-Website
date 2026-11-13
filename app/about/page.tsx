@@ -26,20 +26,26 @@ export default function Home() {
         <h1 className="text-5xl text-black font-bold">Hi</h1>
         <p className="text-lg text-black">Welcome to my personal website.</p>
         
-        <div className="columns-3xs gap-4">
-          <Image className="aspect-3/2 w-full object-cover mb-4" src="/logos/Queens.jpg" alt="queens" width={600} height={400}/>
-          <Image className="aspect-3/2 w-full object-cover mb-4" src="/logos/qvex.jpg" alt="qvex" width={600} height={400}/>
-          <Image className="aspect-3/2 w-full object-cover mb-4" src="/logos/QSDT_Logo-1.jpg" alt="solar" width={600} height={400} />
-          <Image className="aspect-3/2 w-full object-cover mb-4" src="/logos/QBMET_Logo-1.jpg" alt="qbmet" width={600} height={400} />
-          <Image className="aspect-3/2 w-full object-cover mb-4" src="/logos/engsoc.jpg" alt="engsoc" width={600} height={400} />
-        
-        </div> 
-
-        <div className="columns-3xs gap-4">
-          
-          <Image src="/logos/qret.jpg" alt="qret" width={600} height={400} />
-        
-        </div> 
+          <div className="mx-auto columns-3xs max-w-10xl gap-10">
+            {[
+              ["Queens.jpg", "Queen's", "object-cover"],
+              ["qvex.jpg", "QVEX", "object-cover"],
+              ["QSDT_Logo-1.jpg", "Solar", "object-cover"],
+              ["QBMET_Logo-1.jpg", "QBMET", "object-cover"],
+              ["engsoc.jpg", "EngSoc", "object-cover"],
+              ["qret.jpg", "QRET", "object-contain"],
+            ].map(([file, alt, fit]) => (
+              <Image
+                key={file}
+                className={`mb-4 aspect-3/2 w-full ${fit}`}
+                src={`/logos/${file}`}
+                alt={alt}
+                width={600}
+                height={400}
+                unoptimized
+              />
+            ))}
+        </div>
       
         <section className="bg-[#031d3a] px-8 py-24 text-white">
           <div className="mx-auto max-w-6xl">
