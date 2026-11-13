@@ -20,7 +20,6 @@ export default function Footer() {
           <div>
             <h3 className="text-xl font-bold mb-4">Contact</h3>
             <p className="text-gray-300">
-              Queens University<br />
               Kingston, ON, Canada<br />
               <a href="mailto:michael.zhu@queensu.ca" className="hover:text-solar-yellow transition">
                 michael.zhu@queensu.ca
