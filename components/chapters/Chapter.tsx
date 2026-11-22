@@ -16,6 +16,7 @@ export default function Chapter({ chapter, header = true, children }: Props) {
     "--chapter-fg": cssVar(chapter.foreground),
     "--chapter-accent": cssVar(chapter.accent),
     "--chapter-screens": chapter.screens,
+    "--chapter-header-at": chapter.headerAt ?? 0,
   } as CSSProperties;
 
   return (

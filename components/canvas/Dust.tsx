@@ -14,7 +14,7 @@ export default function Dust({ count, chapterCount }: Props) {
     const array = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
       array[i * 3] = (random() - 0.5) * 30;
-      array[i * 3 + 1] = (random() - 0.5) * 18;
+      array[i * 3 + 1] = (random() - 0.35) * 26;
       array[i * 3 + 2] = CAMERA_START_Z - random() * depth;
     }
     return array;

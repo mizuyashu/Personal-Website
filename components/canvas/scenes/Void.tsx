@@ -34,7 +34,7 @@ export default function Void({ lite, reducedMotion }: Props) {
     const seeds = new Float32Array(emberCount);
     for (let i = 0; i < emberCount; i++) {
       positions[i * 3] = (random() - 0.5) * 18;
-      positions[i * 3 + 1] = (random() - 0.5) * 10;
+      positions[i * 3 + 1] = (random() - 0.5) * 16;
       positions[i * 3 + 2] = -4 - random() * 12;
       seeds[i] = random();
     }

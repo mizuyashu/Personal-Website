@@ -11,7 +11,7 @@ varying float vFlicker;
 void main() {
   vec3 p = position;
   float speed = 0.2 + aSeed * 0.45;
-  p.y = mod(p.y + 5.0 + uTime * speed, 10.0) - 5.0;
+  p.y = mod(p.y + 8.0 + uTime * speed, 16.0) - 8.0;
   p.x += sin(uTime * 0.5 + aSeed * 40.0) * 0.3;
 
   vec4 mv = modelViewMatrix * vec4(p, 1.0);

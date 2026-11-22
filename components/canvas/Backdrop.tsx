@@ -4,33 +4,53 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Color, type Fog } from "three";
 import { chapters } from "@/content/chapters";
-import { INTRO } from "@/lib/intro";
+import { CORRIDOR } from "@/lib/corridor";
+import { INTRO, smoothstep } from "@/lib/intro";
 import { palette } from "@/lib/palette";
 import { journey } from "@/lib/scroll";
 
-const colours = chapters.map((c) => new Color(palette[c.background]));
+const grounds = chapters.map((c) => new Color(palette[c.background]));
 const VOID = new Color(palette.ink);
+const CATHEDRAL = new Color(palette.lavender);
 
-/** How far into a chapter the blend to the next chapter's colour starts. */
-const BLEND_START = 0.75;
+/** Where in each chapter the blend into the next chapter's ground starts. */
+const BLEND_START = [INTRO.fadeOutStart, CORRIDOR.exitStart, 0.75, 0.75, 0.75];
 
-// Scene background + matching fog: each chapter holds its colour, then blends into the
-// next over its last quarter (placeholder colours). Fog hides shapes further down the route.
+const scratch = new Color();
+
+/** Ground colour inside one chapter, before blending to the next. */
+function groundIn(chapter: number, local: number, out: Color) {
+  if (chapter === 0 && local < INTRO.flashPeak) return out.copy(VOID); // the void until the flash
+  if (chapter === 1) {
+    // Lavender cathedral, brightening to the blueprint's ivory as the camera rises into the skylight.
+    return out.lerpColors(CATHEDRAL, grounds[1], smoothstep(CORRIDOR.tiltEnd, CORRIDOR.riseEnd, local));
+  }
+  return out.copy(grounds[chapter]);
+}
+
+// Scene background + matching fog. Each chapter holds its ground, then blends into the
+// next chapter's opening ground at the end. Fog hides what's further down the route.
 export default function Backdrop() {
   const background = useRef<Color>(null);
   const fog = useRef<Fog>(null);
 
   useFrame(() => {
     if (!background.current) return;
-    const last = colours.length - 1;
+    const last = grounds.length - 1;
     const chapter = Math.min(last, Math.floor(journey.position));
     const local = journey.position - chapter;
-    const t = chapter < last ? Math.min(1, Math.max(0, (local - BLEND_START) / (1 - BLEND_START))) : 0;
-    const eased = t * t * (3 - 2 * t);
-    // Chapter I is the void (ink) until the flash peaks, then its ivory ground.
-    const from = chapter === 0 && local < INTRO.flashPeak ? VOID : colours[chapter];
-    background.current.lerpColors(from, colours[Math.min(chapter + 1, last)], eased);
-    fog.current?.color.copy(background.current);
+    groundIn(chapter, local, background.current);
+    if (chapter < last) {
+      const t = smoothstep(BLEND_START[chapter] ?? 0.75, 1, local);
+      if (t > 0) background.current.lerp(groundIn(chapter + 1, 0, scratch), t);
+    }
+    if (fog.current) {
+      fog.current.color.copy(background.current);
+      // Denser haze inside the cathedral (chapter II before the rise), open air elsewhere.
+      const haze = chapter === 1 ? 1 - smoothstep(CORRIDOR.tiltEnd, CORRIDOR.riseEnd, local) : 0;
+      fog.current.near = 6 - haze * 3;
+      fog.current.far = 30 - haze * 8;
+    }
   });
 
   return (

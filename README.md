@@ -43,11 +43,11 @@ app/
 └── page.tsx              the whole journey, chapters in order
 components/
 ├── canvas/               the one fixed <Canvas>: World, CameraRig, Backdrop, Dust, placeholders
-│   └── scenes/           Void, Sun (intro)
+│   └── scenes/           Void, Sun (intro), Arches, Blueprint (chapter II corridor + skylight)
 ├── chapters/             Journey (scroll timeline), Chapter, Intro (name mark + flash), Filigree, ScrollHint
 └── ui/                   Loader, CornerMenu (Full/Lite), CompassNav, CompassStar
 content/                  site.ts, chapters.ts (all copy lives here)
-lib/                      palette, gsap, scroll, intro, loading, quality, motion
+lib/                      palette, gsap, scroll, intro, corridor, loading, quality, motion
 shaders/                  .glsl (imported as strings via loaders/glsl-loader.js)
 public/logos/             design team and Queen’s logos
 docs/                     vision.md, milestones.md
