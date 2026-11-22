@@ -7,6 +7,7 @@ The site is being rebuilt as a scroll-driven 3D journey on the `Radiance` branch
 
 - Creative vision: [docs/vision.md](docs/vision.md)
 - Build order and status: [docs/milestones.md](docs/milestones.md)
+- Content still to write: [docs/content-checklist.md](docs/content-checklist.md)
 - Working rules for code (stack, layout, architecture): [CLAUDE.md](CLAUDE.md)
 
 ## Tech stack
@@ -54,5 +55,5 @@ lib/                      palette, gsap, scroll, quality, motion, loading, and p
                           (intro, corridor, dawn, embers, bonfire)
 shaders/                  .glsl (imported as strings via loaders/glsl-loader.js)
 public/logos/             design team and Queen’s logos
-docs/                     vision.md, milestones.md
+docs/                     vision.md, milestones.md, content-checklist.md
 ```

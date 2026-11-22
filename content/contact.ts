@@ -6,9 +6,7 @@ export type ContactLink = { label: string; href: string; note: string };
 export const contact = {
   intro: "TODO(content): an invitation to reach out.",
   rest: "Rest at the bonfire",
-  menuButton: "Contact",
   menuTitle: "Send word",
-  close: "Close",
   pending: "TODO(content): link",
   links: [
     { label: "GitHub", href: "", note: "TODO(content)" },
