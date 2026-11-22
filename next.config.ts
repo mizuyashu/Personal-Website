@@ -1,17 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  experimental: {
-    agentFeedback: true,
-  },
-  cacheComponents: true,
-  partialPrefetching: true,
+  reactStrictMode: true,
   turbopack: {
     rules: {
-      "*.css": {
-        loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
+      // Shaders live in shaders/*.glsl and import as strings.
+      "*.glsl": {
+        loaders: ["./loaders/glsl-loader.js"],
+        as: "*.js",
       },
     },
   },

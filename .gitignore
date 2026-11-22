@@ -1,15 +1,13 @@
-# Python / Django
-venv/
-__pycache__/
-*.pyc
-db.sqlite3
-.env
+.claude
+CLAUDE.md
+docs
 
 # Node / Next.js
 node_modules/
 .next/
-.env.local
+.env*
 
 # OS / editor
 .DS_Store
 .vscode/
+

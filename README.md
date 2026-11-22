@@ -1,50 +1,24 @@
 # Michael's Personal Website
 
-Personal site for showcasing my education, design teams, and projects as a
-Computer Engineering student at Queen's University.
+Personal site for a Computer Engineering student at Queen’s University.
 
-## Tech Stack
+The site is being rebuilt as a scroll-driven 3D journey on the `Radiance` branch.
+`main` is the live site until the final milestone.
 
-- [Next.js](https://nextjs.org/) (App Router)
-- TypeScript
-- Tailwind CSS
+- Creative vision: [docs/vision.md](docs/vision.md)
+- Build order and status: [docs/milestones.md](docs/milestones.md)
+- Working rules for code (stack, layout, architecture): [CLAUDE.md](CLAUDE.md)
 
-## Pages
+## Tech stack
 
-| Route           | Description                          |
-| --------------- | ------------------------------------ |
-| `/`             | Home                                 |
-| `/about`        | About me                             |
-| `/education`    | Education                            |
-| `/design-teams` | Design teams I'm part of             |
-| `/projects`     | Current and past projects            |
-| `/dashboard`    | [What the dashboard shows]           |
+- [Next.js 16](https://nextjs.org/) (App Router), React 19, TypeScript
+- Three.js, React Three Fiber, drei, postprocessing
+- GSAP + `@gsap/react` (ScrollTrigger, ScrollSmoother, SplitText)
+- Plain CSS / CSS Modules with palette variables
 
-## Project Structure
+Requires Node.js 20.9 or newer.
 
-```
-app/          # Routes (page.tsx) and the root layout
-components/   # Shared components (Navbar, Footer, PageHeader)
-public/       # Static assets (logos, images)
-```
-
-## Folder Structure
-
-app/
-├── page.tsx 
-├── layout.tsx            
-├── about/page.tsx
-├── education/page.tsx
-├── design-teams/page.tsx
-├── projects/page.tsx
-└── dashboard/page.tsx
-components/
-├── Navbar.tsx
-├── Footer.tsx
-└── PageHeader.tsx
-public/
-
-## Getting Started
+## Getting started
 
 ```bash
 npm install
@@ -60,7 +34,21 @@ Open [http://localhost:3000](http://localhost:3000).
 - `npm run start`: run the production build
 - `npm run lint`: run ESLint
 
-## Notes
+## Structure
 
-All routes now live in the
-`app/` directory.
+```
+app/
+├── layout.tsx            fonts, global CSS
+├── globals.css           palette variables, base styles
+└── page.tsx              the whole journey, chapters in order
+components/
+├── canvas/               the one fixed <Canvas>: World, CameraRig, Backdrop, Dust, placeholders
+│   └── scenes/           Void, Sun (intro), Arches, Blueprint (chapter II corridor + skylight)
+├── chapters/             Journey (scroll timeline), Chapter, Intro (name mark + flash), Filigree, ScrollHint
+└── ui/                   Loader, CornerMenu (Full/Lite), CompassNav, CompassStar
+content/                  site.ts, chapters.ts (all copy lives here)
+lib/                      palette, gsap, scroll, intro, corridor, loading, quality, motion
+shaders/                  .glsl (imported as strings via loaders/glsl-loader.js)
+public/logos/             design team and Queen’s logos
+docs/                     vision.md, milestones.md
+```

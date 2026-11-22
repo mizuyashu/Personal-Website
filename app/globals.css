@@ -1,26 +1,65 @@
-@import "tailwindcss";
-
+/* Palette tokens (docs/vision.md §5). Mirrored in lib/palette.ts; change both together. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --cobalt: #2342c8;
+  --gold: #f2c45a;
+  --ivory: #fff6e3;
+  --ink: #0b0a0a;
+  --sky: #7cc8f2;
+  --ember: #c8231e; /* rare */
+  --crimson-violet: #4a1630;
+  --violet: #6b4fd8;
+  --lavender: #b9b4e8;
+  --navy: #1b2340;
+  --rose: #f2a7b8; /* sparing */
+  --teal: #3fb8b0;
+
+  /* Font stacks; the variables come from next/font in app/layout.tsx. */
+  --font-title: var(--font-cinzel), "Times New Roman", serif;
+  --font-body: var(--font-cormorant), Georgia, serif;
+  --font-stem: var(--font-jetbrains), ui-monospace, monospace;
+
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  margin: 0;
+  min-height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--ink);
+  color: var(--ivory);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scroll content sits above the fixed canvas (components/canvas/World). */
+#smooth-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
