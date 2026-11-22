@@ -12,7 +12,10 @@ import styles from "./Constellation.module.css";
 const CHAPTER = 2;
 const { skills, edges } = education;
 
-/** Stars lit once their first line has drawn (the first star is lit from the start). */
+/** Stars in the order they light: the first star, then each line's end star the first time it's reached. */
+const UNLOCK_ORDER = edges.reduce<number[]>((order, [, to]) => (order.includes(to) ? order : [...order, to]), [0]);
+
+/** How many stars are lit once `linesDrawn` lines have drawn (a star can be the end of two lines). */
 function litStars(linesDrawn: number) {
   const lit = new Set<number>([0]);
   edges.slice(0, linesDrawn).forEach(([, to]) => lit.add(to));
@@ -20,7 +23,7 @@ function litStars(linesDrawn: number) {
 }
 
 // Chapter III overlay, fixed over the dawn sky: the skill constellation draws itself line by
-// line as you scroll, and each newly lit star announces itself in a status window.
+// line as you scroll, and key stars announce themselves in a status window (one at a time).
 // Driven by the master scroll position.
 export default function Constellation() {
   const root = useRef<HTMLDivElement>(null);
@@ -49,11 +52,9 @@ export default function Constellation() {
   );
 
   const lit = litStars(drawn);
-  const newest = edges
-    .slice(0, drawn)
-    .map(([, to]) => to)
-    .slice(-3)
-    .reverse();
+  // Only the latest unlock shows, and only for stars marked `unlock` (about 5), so the windows
+  // don't stack up. Keyed by star, so each star's window appears once per pass.
+  const newest = UNLOCK_ORDER.filter((i) => lit.has(i) && skills[i].unlock).slice(-1);
 
   return (
     <div ref={root} className={styles.overlay} aria-label={education.constellationLabel}>

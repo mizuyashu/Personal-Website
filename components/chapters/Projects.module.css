@@ -11,7 +11,7 @@
 .blueprint {
   height: calc(var(--blueprint-screens) * 100svh);
   display: grid;
-  grid-template-rows: 0.95fr 1.1fr 1.1fr 1.1fr;
+  grid-template-rows: var(--blueprint-rows);
   max-width: 64rem;
   margin: 0 auto;
 }

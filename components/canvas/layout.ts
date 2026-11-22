@@ -1,8 +1,9 @@
-import { CORRIDOR } from "@/lib/corridor";
-import { smoothstep } from "@/lib/intro";
+import { CORRIDOR, projectReveal } from "@/lib/corridor";
+import { clamp01, smoothstep } from "@/lib/intro";
 
 // Shared layout of the 3D journey: the camera dollies down -Z, one stretch per chapter,
-// except chapter II, which walks the corridor, looks up, rises into the skylight and through it.
+// except chapter II, which walks the nave, looks up at the crossing, rides the lift up the
+// lantern tower into the skylight, and rises through it.
 export const CAMERA_START_Z = 10;
 export const CHAPTER_SPACING = 20;
 
@@ -11,40 +12,81 @@ export function cameraZ(position: number) {
   return CAMERA_START_Z - position * CHAPTER_SPACING;
 }
 
-// Cathedral corridor (chapter II), in world units. Eye level is y = 0.
+// Cathedral (chapter II), in world units. Eye level is y = 0.
 export const FLOOR_Y = -1.6;
-export const CEILING_Y = 4.8;
-export const CROSSING_Z = -27; // under the skylight
-export const SKYLIGHT_SIZE = 6;
-export const RISE_Y = 2.6; // how high the camera rises toward the skylight
-export const SKY_Y = 8; // above the roof: chapters III–V fly at this height
+/** Where the nave's barrel vault springs from the colonnade (its crown is NAVE_HALF higher). */
+export const VAULT_Y = 7.4;
+/** Half-width of the nave (colonnade line) and of the lantern tower above the crossing. */
+export const NAVE_HALF = 4;
+export const CROSSING_Z = -27; // under the tower
+/** The skylight is the whole top of the tower: overwhelmingly high, like flying at the sun. */
+export const SKYLIGHT_SIZE = NAVE_HALF * 2;
+export const SKYLIGHT_Y = 64;
+export const RISE_Y = SKYLIGHT_Y - 2.2; // the lift stops here, the skylight filling the view
+export const SKY_Y = SKYLIGHT_Y + 3.2; // above the roof: chapters III–V fly at this height
+/** Camera pitch while standing on the lift, before it turns to look straight up. */
+const LIFT_PITCH = 1.15;
+/** How far the lift heaves during its slow start, before it surges. */
+const CREEP_Y = 0.7;
 
-export type CameraPose = { z: number; y: number; pitch: number };
+/**
+ * Camera pose. Normally the camera looks ahead, tilted up by `pitch`. When `aim` is set it looks
+ * at the centre of the blueprint instead (the pull-offs to the side before each project).
+ */
+export type CameraPose = { x: number; y: number; z: number; pitch: number; aim: boolean };
+
+/** Centre of the blueprint (the skylight plate): what the camera looks back at during a pull-off. */
+export const BLUEPRINT_CENTRE = [0, SKYLIGHT_Y, CROSSING_Z] as const;
+
+/** How far the camera swings out for a pull-off: to the side, down, and back. */
+const PULL = { side: 2.8, drop: 2.6, back: 1.4 };
+
+/** Lift height (0 → RISE_Y) at chapter II progress `u`: slow heavy creep, then a surge that eases into the top. */
+export function liftHeight(u: number) {
+  if (u <= CORRIDOR.tiltEnd) return 0;
+  if (u < CORRIDOR.liftSurge) return CREEP_Y * smoothstep(CORRIDOR.tiltEnd, CORRIDOR.liftSurge, u);
+  const s = clamp01((u - CORRIDOR.liftSurge) / (CORRIDOR.arrive - CORRIDOR.liftSurge));
+  // Accelerates for most of the way (s^1.6 front-loads the slowness), soft stop at the top.
+  const surge = 0.5 - 0.5 * Math.cos(Math.PI * Math.pow(s, 1.6));
+  return CREEP_Y + (RISE_Y - CREEP_Y) * surge;
+}
 
 /** Where the camera is, and how far it looks up, at a journey position. */
 export function cameraPose(position: number, chapterCount: number): CameraPose {
   // Rest at the last chapter's midpoint so the closing scene stays in frame.
   const p = Math.min(position, chapterCount - 0.5);
-  if (p < 1) return { z: cameraZ(p), y: 0, pitch: 0 };
-  if (p >= 2) return { z: cameraZ(p), y: SKY_Y, pitch: 0 };
+  if (p < 1) return { x: 0, z: cameraZ(p), y: 0, pitch: 0, aim: false };
+  if (p >= 2) return { x: 0, z: cameraZ(p), y: SKY_Y, pitch: 0, aim: false };
 
   const u = p - 1;
   const walk = smoothstep(0, CORRIDOR.walkEnd, u);
+  // A slight upward gaze while walking, so the height of the nave reads.
+  const gaze = smoothstep(0, 0.35, walk) * 0.16;
   const tilt = smoothstep(CORRIDOR.walkEnd, CORRIDOR.tiltEnd, u);
-  const rise = smoothstep(CORRIDOR.tiltEnd, CORRIDOR.riseEnd, u);
+  // Straighten to look directly up as the lift nears the top.
+  const straighten = smoothstep(CORRIDOR.liftSurge + (CORRIDOR.arrive - CORRIDOR.liftSurge) * 0.4, CORRIDOR.arrive, u);
   // Exit: keep rising through the skylight; once above the roof, level out toward the horizon.
   const exitRise = smoothstep(CORRIDOR.exitStart, 1, u);
   const level = smoothstep(CORRIDOR.exitStart + (1 - CORRIDOR.exitStart) * 0.5, 1, u);
   const walked = cameraZ(1) + (CROSSING_Z - cameraZ(1)) * walk;
+  const standing = gaze + (LIFT_PITCH - gaze) * tilt;
+  const lookUp = standing + (Math.PI / 2 - standing) * straighten;
+  // Before each project, swing off to the side (alternating) and look back at the blueprint
+  // at an angle: an isometric-style view of the plate, then settle flat as the project arrives.
+  const reveal = projectReveal(u);
+  const side = reveal.index % 2 === 0 ? 1 : -1;
   return {
-    z: walked + (cameraZ(2) - walked) * level,
-    y: rise * RISE_Y + (SKY_Y - RISE_Y) * exitRise,
-    pitch: (tilt - level) * (Math.PI / 2),
+    x: side * PULL.side * reveal.amount,
+    z: walked + (cameraZ(2) - walked) * level + PULL.back * reveal.amount,
+    y: liftHeight(u) + (SKY_Y - RISE_Y) * exitRise - PULL.drop * reveal.amount,
+    pitch: lookUp * (1 - level),
+    aim: reveal.amount > 0,
   };
 }
 
 /** Still key frame per chapter for reduced motion (progress through each chapter). */
-export const KEY_FRAMES = [0.6, 0.72, 0.5, 0.5, 0.5];
+// Chapter II holds the flat blueprint, before the first project reveal.
+export const KEY_FRAMES = [0.6, 0.5, 0.5, 0.5, 0.5];
 
 /** Small seeded random generator, so generated geometry is the same every render. */
 export function seededRandom(seed: number) {

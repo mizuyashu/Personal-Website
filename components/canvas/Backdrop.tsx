@@ -22,8 +22,8 @@ const scratch = new Color();
 function groundIn(chapter: number, local: number, out: Color) {
   if (chapter === 0 && local < INTRO.flashPeak) return out.copy(VOID); // the void until the flash
   if (chapter === 1) {
-    // Lavender cathedral, brightening to the blueprint's ivory as the camera rises into the skylight.
-    return out.lerpColors(CATHEDRAL, grounds[1], smoothstep(CORRIDOR.tiltEnd, CORRIDOR.riseEnd, local));
+    // Lavender cathedral, brightening to the blueprint's ivory as the lift arrives at the skylight.
+    return out.lerpColors(CATHEDRAL, grounds[1], smoothstep(CORRIDOR.liftSurge, CORRIDOR.riseEnd, local));
   }
   return out.copy(grounds[chapter]);
 }
@@ -47,7 +47,7 @@ export default function Backdrop() {
     if (fog.current) {
       fog.current.color.copy(background.current);
       // Denser haze inside the cathedral (chapter II before the rise), open air elsewhere.
-      const haze = chapter === 1 ? 1 - smoothstep(CORRIDOR.tiltEnd, CORRIDOR.riseEnd, local) : 0;
+      const haze = chapter === 1 ? 1 - smoothstep(CORRIDOR.liftSurge, CORRIDOR.riseEnd, local) : 0;
       fog.current.near = 6 - haze * 3;
       fog.current.far = 30 - haze * 8;
     }

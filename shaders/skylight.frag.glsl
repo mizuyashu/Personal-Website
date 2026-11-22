@@ -1,6 +1,8 @@
 // The gridded skylight: bright ivory light behind gold mullions. As uBlueprint goes 0 → 1
 // the mullions turn cobalt and a fine drafting grid fades in: the skylight becomes the blueprint.
 uniform float uBlueprint;
+// Grid density (1 = the original 6 panes across the skylight).
+uniform float uCells;
 uniform vec3 uIvory;
 uniform vec3 uGold;
 uniform vec3 uCobalt;
@@ -16,9 +18,9 @@ float grid(vec2 uv, float cells, float width) {
 
 void main() {
   vec2 uv = vUv;
-  float panes = grid(uv, 6.0, 2.5);
+  float panes = grid(uv, 6.0 * uCells, 2.5);
   float frame = 1.0 - smoothstep(0.0, 0.012, min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y)));
-  float fine = grid(uv, 60.0, 1.0) * 0.35 + grid(uv, 12.0, 1.2) * 0.6;
+  float fine = grid(uv, 60.0 * uCells, 1.0) * 0.35 + grid(uv, 12.0 * uCells, 1.2) * 0.6;
 
   // Light: brighter toward the centre.
   float glow = 1.0 - length(uv - 0.5) * 0.35;

@@ -6,7 +6,8 @@ attribute float aSeed;
 varying float vAlpha;
 
 void main() {
-  float wave = sin(uTime * (0.4 + aSeed * 0.9) + aSeed * 60.0);
-  vAlpha = smoothstep(0.55, 1.0, wave);
+  // Slow, rare blinks: each line is dark most of the time.
+  float wave = sin(uTime * (0.25 + aSeed * 0.5) + aSeed * 60.0);
+  vAlpha = smoothstep(0.8, 1.0, wave);
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }

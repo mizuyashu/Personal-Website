@@ -25,17 +25,23 @@ export default function Void({ lite, reducedMotion }: Props) {
   const glowMesh = useRef<Mesh>(null);
   const glow = useRef<ShaderMaterial>(null);
 
-  const emberCount = lite ? 400 : 1500;
-  const lineCount = lite ? 30 : 80;
+  // Sparse on purpose: scattered and doomy, with plenty of empty dark (Michael's review:
+  // the earlier 1500 embers + 80 lines read as messy).
+  const emberCount = lite ? 220 : 520;
+  const lineCount = lite ? 10 : 22;
 
   const emberData = useMemo(() => {
     const random = seededRandom(7);
     const positions = new Float32Array(emberCount * 3);
     const seeds = new Float32Array(emberCount);
     for (let i = 0; i < emberCount; i++) {
-      positions[i * 3] = (random() - 0.5) * 18;
+      // Keep the middle mostly empty so the rising light has dark around it.
+      let x = (random() - 0.5) * 22;
+      if (Math.abs(x) < 3.5 && random() < 0.65) x = Math.sign(x || 1) * (3.5 + random() * 7.5);
+      positions[i * 3] = x;
       positions[i * 3 + 1] = (random() - 0.5) * 16;
-      positions[i * 3 + 2] = -4 - random() * 12;
+      // Deep spread: a few near and large, most far and faint.
+      positions[i * 3 + 2] = -4 - Math.pow(random(), 0.6) * 20;
       seeds[i] = random();
     }
     return { positions, seeds };
@@ -46,7 +52,8 @@ export default function Void({ lite, reducedMotion }: Props) {
     const positions = new Float32Array(lineCount * 6);
     const seeds = new Float32Array(lineCount * 2);
     for (let i = 0; i < lineCount; i++) {
-      const x = (random() - 0.5) * 16;
+      const side = random() < 0.5 ? -1 : 1;
+      const x = side * (2.5 + random() * 7);
       const y = (random() - 0.5) * 9;
       const z = -6 - random() * 8;
       const angle = random() * Math.PI * 2;
@@ -62,7 +69,7 @@ export default function Void({ lite, reducedMotion }: Props) {
   const emberUniforms = useMemo(
     () => ({
       uTime: { value: 0 },
-      uSize: { value: 70 },
+      uSize: { value: 62 },
       uPixelRatio: { value: 1 },
       uOpacity: { value: 1 },
       uEmberShare: { value: 0.12 },

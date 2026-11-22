@@ -10,6 +10,10 @@ import { setJourneyPosition } from "@/lib/scroll";
 // the journey position (chapter index + progress), which the canvas and overlays read.
 // Smooth scrolling via ScrollSmoother, except with reduced motion and on touch (native).
 // Snap only in special sequences: the intro flash (never with reduced motion).
+function devNoSnap() {
+  return process.env.NODE_ENV === "development" && new URLSearchParams(window.location.search).has("nosnap");
+}
+
 export default function Journey({ children }: { children: ReactNode }) {
   const wrapper = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
@@ -64,7 +68,8 @@ export default function Journey({ children }: { children: ReactNode }) {
           update(self);
         },
         onUpdate: update,
-        snap: reducedMotion ? undefined : { snapTo, duration: { min: 0.4, max: 1 }, delay: 0.12, ease: "power2.inOut" },
+        // Dev only: ?nosnap turns the snap off so browser tests can jump straight to a position.
+        snap: reducedMotion || devNoSnap() ? undefined : { snapTo, duration: { min: 0.4, max: 1 }, delay: 0.12, ease: "power2.inOut" },
       });
     },
     { dependencies: [reducedMotion], revertOnUpdate: true },

@@ -6,6 +6,8 @@ export type Skill = {
   /** Position in the constellation (viewBox 100 × 60). */
   x: number;
   y: number;
+  /** Shows a "Skill unlocked" window when it lights. Keep this to about 5 stars so it doesn't feel spammy. */
+  unlock?: boolean;
 };
 
 export const education = {
@@ -16,13 +18,13 @@ export const education = {
   constellationLabel: "Skill constellation",
   unlocked: "Skill unlocked",
   skills: [
-    { name: "Skill I", x: 12, y: 44 },
-    { name: "Skill II", x: 26, y: 30 },
+    { name: "Skill I", x: 12, y: 44, unlock: true },
+    { name: "Skill II", x: 26, y: 30, unlock: true },
     { name: "Skill III", x: 41, y: 38 },
-    { name: "Skill IV", x: 52, y: 18 },
-    { name: "Skill V", x: 66, y: 32 },
+    { name: "Skill IV", x: 52, y: 18, unlock: true },
+    { name: "Skill V", x: 66, y: 32, unlock: true },
     { name: "Skill VI", x: 79, y: 14 },
-    { name: "Skill VII", x: 88, y: 40 },
+    { name: "Skill VII", x: 88, y: 40, unlock: true },
   ] satisfies Skill[],
   /** Lines between stars (prerequisites), drawn in this order. */
   edges: [

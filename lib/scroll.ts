@@ -8,6 +8,15 @@ import { ScrollSmoother } from "@/lib/gsap";
 // The camera rig and scenes read this every frame; they never make their own ScrollTriggers.
 export const journey = { position: 0 };
 
+// Dev only: lets browser tests read where the journey is (window.__journey.position) and
+// jump to a scroll offset (window.__scrollToY(px)). Use with ?nosnap (see Journey.tsx).
+if (process.env.NODE_ENV === "development" && typeof window !== "undefined") {
+  Object.assign(window, {
+    __journey: journey,
+    __scrollToY: (y: number) => ScrollSmoother.get()?.scrollTo(y, false) ?? window.scrollTo(0, y),
+  });
+}
+
 let active = 0;
 const listeners = new Set<() => void>();
 const positionListeners = new Set<(position: number) => void>();
