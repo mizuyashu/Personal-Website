@@ -1,0 +1,55 @@
+/* Chapter V: header, then the links around the fire; the rest belongs to the ending overlay. */
+.contact {
+  height: calc(var(--screens) * 100svh);
+  color: var(--ivory);
+  text-align: center;
+}
+
+.header {
+  padding-top: 22svh;
+}
+
+.numeral {
+  margin: 0;
+  font-family: var(--font-title);
+  letter-spacing: 0.4em;
+  color: var(--gold);
+}
+
+.title {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: clamp(2.25rem, 7vw, 4.5rem);
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  text-shadow: 0 0 24px color-mix(in srgb, var(--gold) 40%, transparent);
+}
+
+.world {
+  margin: 0.75rem 0 0;
+  font-family: var(--font-stem);
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.intro {
+  margin: 1.25rem auto 0;
+  max-width: 32rem;
+  font-style: italic;
+}
+
+.links {
+  margin-top: 30svh;
+}
+
+.rest {
+  margin: 0 0 1rem;
+  font-family: var(--font-stem);
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+}

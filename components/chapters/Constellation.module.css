@@ -1,0 +1,71 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  display: grid;
+  place-items: center;
+  padding: 4rem 1rem 8rem;
+}
+
+.sky {
+  width: min(100%, 64rem);
+  height: auto;
+  overflow: visible;
+}
+
+.line {
+  stroke: var(--ivory);
+  stroke-width: 0.25;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  filter: drop-shadow(0 0 0.6px var(--ivory));
+}
+
+.star path {
+  fill: color-mix(in srgb, var(--ivory) 45%, transparent);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    fill 0.4s ease,
+    transform 0.4s ease;
+}
+
+.star text {
+  font-family: var(--font-stem);
+  font-size: 1.9px;
+  letter-spacing: 0.1px;
+  fill: var(--navy);
+  opacity: 0.45;
+  transition: opacity 0.4s ease;
+}
+
+.star[data-lit="true"] path {
+  fill: var(--gold);
+  transform: scale(1.35);
+  filter: drop-shadow(0 0 1.2px var(--gold));
+}
+
+.star[data-lit="true"] text {
+  opacity: 1;
+}
+
+.status {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .sky {
+    width: 100%;
+  }
+
+  .star text {
+    font-size: 2.6px;
+  }
+}

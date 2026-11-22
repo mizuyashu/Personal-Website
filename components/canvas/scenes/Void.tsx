@@ -65,6 +65,7 @@ export default function Void({ lite, reducedMotion }: Props) {
       uSize: { value: 70 },
       uPixelRatio: { value: 1 },
       uOpacity: { value: 1 },
+      uEmberShare: { value: 0.12 },
       uGold: { value: new Color(palette.gold) },
       uEmber: { value: new Color(palette.ember) },
     }),

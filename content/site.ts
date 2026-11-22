@@ -22,4 +22,5 @@ export const ui = {
   closeCompass: "Close chapters",
   scrollHint: "Scroll",
   loading: "Loading",
+  beginAgain: "Begin again",
 } as const;

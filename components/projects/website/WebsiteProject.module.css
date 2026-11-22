@@ -1,0 +1,49 @@
+.device {
+  margin: 0;
+  width: min(100%, 26rem);
+}
+
+.screen {
+  border: 10px solid var(--ink);
+  border-bottom-width: 14px;
+  border-radius: 10px 10px 0 0;
+  background: var(--ivory);
+  aspect-ratio: 16 / 10;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+}
+
+.browserBar {
+  display: flex;
+  gap: 0.3rem;
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--cobalt) 30%, transparent);
+}
+
+.browserBar span {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  border: 1px solid var(--cobalt);
+}
+
+.placeholder {
+  display: grid;
+  place-items: center;
+  font-family: var(--font-stem);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--cobalt);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--cobalt) 12%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--cobalt) 12%, transparent) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.base {
+  height: 12px;
+  margin: 0 -8%;
+  background: var(--ink);
+  clip-path: polygon(0 0, 100% 0, 96% 100%, 4% 100%);
+}
