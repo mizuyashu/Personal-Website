@@ -3,10 +3,9 @@
 import { useId, useState } from "react";
 import { ui } from "@/content/site";
 import { setAutoQuality, setQuality, useQuality } from "@/lib/quality";
-import ContactMenu from "./ContactMenu";
 import styles from "./ui.module.css";
 
-// Corner menu: the fire-burn Contact button (always one click away) and the Full/Lite switch.
+// Corner menu: the Full/Lite switch. (Contact is reached through the compass nav, chapter V.)
 export default function CornerMenu() {
   const [open, setOpen] = useState(false);
   const { quality, mode } = useQuality();
@@ -16,9 +15,7 @@ export default function CornerMenu() {
 
   return (
     <div className={`${styles.corner} ${styles.topRight}`}>
-      <div className={styles.row}>
-        <ContactMenu buttonClassName={styles.button} />
-        <button
+      <button
           type="button"
           className={styles.button}
           aria-expanded={open}
@@ -27,7 +24,6 @@ export default function CornerMenu() {
         >
           {open ? ui.closeMenu : ui.menu}
         </button>
-      </div>
       {open && (
         <div id={panelId} className={styles.panel}>
           <fieldset className={styles.fieldset}>
