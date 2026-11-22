@@ -29,8 +29,8 @@
   transform-box: fill-box;
   transform-origin: center;
   transition:
-    fill 0.4s ease,
-    transform 0.4s ease;
+    fill 0.25s ease,
+    transform 0.45s cubic-bezier(0.2, 2.2, 0.4, 1);
 }
 
 .star text {
@@ -42,6 +42,7 @@
   transition: opacity 0.4s ease;
 }
 
+/* Lit: the star bursts in (overshoot) and settles, a swift moment. */
 .star[data-lit="true"] path {
   fill: var(--gold);
   transform: scale(1.35);
@@ -67,5 +68,12 @@
 
   .star text {
     font-size: 2.6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star path,
+  .star text {
+    transition: none;
   }
 }

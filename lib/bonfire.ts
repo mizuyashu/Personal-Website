@@ -2,6 +2,9 @@
 export const CONTACT_SCREENS = 4;
 
 export const BONFIRE = {
+  /** The fire ignites as you arrive: the flame overshoots, sparks burst, the light flares. */
+  igniteStart: 0,
+  igniteEnd: 0.16,
   /** Golden sky flash. */
   flashStart: 0.5,
   flashPeak: 0.58,

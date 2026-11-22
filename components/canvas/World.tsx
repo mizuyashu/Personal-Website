@@ -15,6 +15,7 @@ import Dawn from "./scenes/Dawn";
 import Bonfire from "./scenes/Bonfire";
 import Embers from "./scenes/Embers";
 import Sun from "./scenes/Sun";
+import Reveals from "./scenes/Reveals";
 import Void from "./scenes/Void";
 import { CAMERA_START_Z } from "./layout";
 import styles from "./World.module.css";
@@ -43,6 +44,7 @@ export default function World() {
       <Sun reducedMotion={reducedMotion} />
       <Arches lite={lite} reducedMotion={reducedMotion} />
       <Blueprint reducedMotion={reducedMotion} />
+      <Reveals lite={lite} reducedMotion={reducedMotion} />
       <Dawn />
       <Embers lite={lite} reducedMotion={reducedMotion} />
       <Bonfire lite={lite} reducedMotion={reducedMotion} />

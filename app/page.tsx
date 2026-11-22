@@ -9,10 +9,12 @@ import Education from "@/components/chapters/Education";
 import Intro from "@/components/chapters/Intro";
 import Journey from "@/components/chapters/Journey";
 import Projects from "@/components/chapters/Projects";
+import VoidVeil from "@/components/chapters/VoidVeil";
 import ScrollHint from "@/components/chapters/ScrollHint";
 import BlueprintHud from "@/components/ui/BlueprintHud";
 import CompassNav from "@/components/ui/CompassNav";
 import CornerMenu from "@/components/ui/CornerMenu";
+import GameControls from "@/components/ui/GameControls";
 import Loader from "@/components/ui/Loader";
 import { chapters } from "@/content/chapters";
 
@@ -66,12 +68,14 @@ export default function Home() {
           })}
         </main>
       </Journey>
+      <VoidVeil />
       <Intro />
       <Constellation />
       <Descent />
       <Ending />
       <CornerMenu />
       <CompassNav />
+      <GameControls />
       <Loader />
     </>
   );

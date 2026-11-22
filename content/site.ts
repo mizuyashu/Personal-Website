@@ -24,3 +24,20 @@ export const ui = {
   loading: "Loading",
   beginAgain: "Begin again",
 } as const;
+
+// Video-game controls (components/ui/GameControls.tsx): the prompt card's rows.
+export const controls = {
+  title: "Controls",
+  keyboard: [
+    { keys: ["W", "S"], action: "Move" },
+    { keys: ["Q", "E"], action: "Chapter" },
+    { keys: ["1–5"], action: "Jump" },
+    { keys: ["H"], action: "Controls" },
+  ],
+  gamepad: [
+    { keys: ["A", "B"], action: "Move" },
+    { keys: ["LB", "RB"], action: "Chapter" },
+    { keys: ["L-stick"], action: "Glide" },
+    { keys: ["Start"], action: "Chapters" },
+  ],
+} as const;

@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import type { Chapter } from "@/content/chapters";
 import { projects, projectsCopy, type Project } from "@/content/projects";
-import { BLUEPRINT_SCREENS, CORRIDOR, PROJECTS_SCREENS } from "@/lib/corridor";
+import { BLUEPRINT_ROWS, BLUEPRINT_SCREENS, CORRIDOR, PROJECTS_SCREENS } from "@/lib/corridor";
 import HudWindow from "@/components/ui/HudWindow";
 import TarotCard from "@/components/ui/TarotCard";
 import WebsiteProject, { WebsiteEmblem } from "@/components/projects/website/WebsiteProject";
@@ -20,6 +20,7 @@ export default function Projects({ chapter }: { chapter: Chapter }) {
   const layout = {
     "--corridor-screens": CORRIDOR.riseEnd * PROJECTS_SCREENS,
     "--blueprint-screens": BLUEPRINT_SCREENS,
+    "--blueprint-rows": BLUEPRINT_ROWS.map((fr) => `${fr}fr`).join(" "),
   } as CSSProperties;
 
   return (
