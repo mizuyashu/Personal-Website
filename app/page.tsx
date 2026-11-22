@@ -1,14 +1,27 @@
-import { site } from "@/content/site";
-import styles from "./page.module.css";
+import WorldLoader from "@/components/canvas/WorldLoader";
+import Chapter from "@/components/chapters/Chapter";
+import Journey from "@/components/chapters/Journey";
+import NameMark from "@/components/chapters/NameMark";
+import CompassNav from "@/components/ui/CompassNav";
+import CornerMenu from "@/components/ui/CornerMenu";
+import { chapters } from "@/content/chapters";
 
-// M0: blank ivory page with the name in Cinzel. The journey replaces this in M1.
+// The whole journey: one fixed canvas behind, chapters in order on top.
 export default function Home() {
   return (
-    <main className={styles.page}>
-      <div className={styles.mark}>
-        <h1 className={styles.name}>{site.name}</h1>
-        <p className={styles.epithet}>{site.epithet}</p>
-      </div>
-    </main>
+    <>
+      <WorldLoader />
+      <Journey>
+        <main>
+          {chapters.map((chapter) => (
+            <Chapter key={chapter.id} chapter={chapter}>
+              {chapter.id === "intro" && <NameMark />}
+            </Chapter>
+          ))}
+        </main>
+      </Journey>
+      <CornerMenu />
+      <CompassNav />
+    </>
   );
 }

@@ -34,12 +34,18 @@ body {
 }
 
 body {
-  background: var(--ivory);
-  color: var(--ink);
+  background: var(--ink);
+  color: var(--ivory);
   font-family: var(--font-body);
   font-size: 1.125rem;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Scroll content sits above the fixed canvas (components/canvas/World). */
+#smooth-wrapper {
+  position: relative;
+  z-index: 1;
 }
 
 ::selection {

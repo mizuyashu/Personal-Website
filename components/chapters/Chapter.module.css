@@ -1,0 +1,56 @@
+.chapter {
+  position: relative;
+  min-height: 200svh;
+  padding: 0 1rem;
+  color: var(--chapter-fg);
+}
+
+.inner {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding-top: 35svh;
+  text-align: center;
+}
+
+.numeral {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  letter-spacing: 0.4em;
+  color: var(--chapter-accent);
+}
+
+.title {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: clamp(2rem, 6vw, 4rem);
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+}
+
+.world {
+  margin: 0.75rem 0 0;
+  font-family: var(--font-stem);
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+/* Intro: the name mark (M0) inside chapter I. */
+.name {
+  margin: 3rem 0 0;
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: clamp(3rem, 12vw, 9rem);
+  letter-spacing: 0.08em;
+  line-height: 1;
+  color: var(--chapter-accent);
+}
+
+.epithet {
+  margin: 1.25rem 0 0;
+  font-style: italic;
+  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+}

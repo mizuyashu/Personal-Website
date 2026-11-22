@@ -16,3 +16,8 @@ export const palette = {
 } as const;
 
 export type PaletteName = keyof typeof palette;
+
+/** The CSS variable for a palette colour, e.g. "crimsonViolet" → "var(--crimson-violet)". */
+export function cssVar(name: PaletteName) {
+  return `var(--${name.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)})`;
+}

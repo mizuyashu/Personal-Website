@@ -6,16 +6,15 @@ The site is being rebuilt as a scroll-driven 3D journey on the `Radiance` branch
 `main` is the live site until the final milestone.
 
 - Creative vision: [docs/vision.md](docs/vision.md)
-- Build order: [docs/milestones.md](docs/milestones.md)
+- Build order and status: [docs/milestones.md](docs/milestones.md)
 - Working rules for code (stack, layout, architecture): [CLAUDE.md](CLAUDE.md)
 
 ## Tech stack
 
 - [Next.js 16](https://nextjs.org/) (App Router), React 19, TypeScript
-- GSAP + `@gsap/react`
 - Three.js, React Three Fiber, drei, postprocessing
+- GSAP + `@gsap/react` (ScrollTrigger, ScrollSmoother, SplitText)
 - Plain CSS / CSS Modules with palette variables
-- Tailwind CSS v4 (old pages only; removed once the new journey replaces them)
 
 Requires Node.js 20.9 or newer.
 
@@ -35,24 +34,19 @@ Open [http://localhost:3000](http://localhost:3000).
 - `npm run start`: run the production build
 - `npm run lint`: run ESLint
 
-## Current structure
+## Structure
 
 ```
 app/
-├── layout.tsx            root layout: fonts, global CSS
+├── layout.tsx            fonts, global CSS
 ├── globals.css           palette variables, base styles
-├── page.tsx              /  (the new site)
-└── (legacy)/             old pages, removed after M1
-    ├── layout.tsx        Navbar + Footer + Tailwind
-    ├── about/            /about
-    ├── education/        /education
-    ├── design-teams/     /design-teams
-    └── projects/         /projects
-components/               Navbar, Footer, PageHeader (old pages)
-content/site.ts           name, epithet, site description
-lib/                      palette.ts, gsap.ts
+└── page.tsx              the whole journey, chapters in order
+components/
+├── canvas/               the one fixed <Canvas>: World, CameraRig, Backdrop, placeholder scenes
+├── chapters/             Journey (scroll timeline), Chapter, NameMark
+└── ui/                   CornerMenu (Full/Lite), CompassNav, CompassStar
+content/                  site.ts, chapters.ts (all copy lives here)
+lib/                      palette, gsap, scroll, quality, motion
 public/logos/             design team and Queen’s logos
 docs/                     vision.md, milestones.md
 ```
-
-The target layout for the new site is in [CLAUDE.md](CLAUDE.md#layout).
