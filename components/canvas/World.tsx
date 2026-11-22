@@ -9,9 +9,11 @@ import { stepDownAuto, useQuality } from "@/lib/quality";
 import Backdrop from "./Backdrop";
 import CameraRig from "./CameraRig";
 import Dust from "./Dust";
-import Placeholders from "./Placeholders";
 import Arches from "./scenes/Arches";
 import Blueprint from "./scenes/Blueprint";
+import Dawn from "./scenes/Dawn";
+import Bonfire from "./scenes/Bonfire";
+import Embers from "./scenes/Embers";
 import Sun from "./scenes/Sun";
 import Void from "./scenes/Void";
 import { CAMERA_START_Z } from "./layout";
@@ -41,7 +43,9 @@ export default function World() {
       <Sun reducedMotion={reducedMotion} />
       <Arches lite={lite} reducedMotion={reducedMotion} />
       <Blueprint reducedMotion={reducedMotion} />
-      <Placeholders reducedMotion={reducedMotion} />
+      <Dawn />
+      <Embers lite={lite} reducedMotion={reducedMotion} />
+      <Bonfire lite={lite} reducedMotion={reducedMotion} />
       <Dust count={lite ? 600 : 4000} chapterCount={chapters.length} />
       <CameraRig chapterCount={chapters.length} reducedMotion={reducedMotion} />
     </Canvas>

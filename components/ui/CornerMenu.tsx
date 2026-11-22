@@ -3,9 +3,10 @@
 import { useId, useState } from "react";
 import { ui } from "@/content/site";
 import { setAutoQuality, setQuality, useQuality } from "@/lib/quality";
+import ContactMenu from "./ContactMenu";
 import styles from "./ui.module.css";
 
-// Corner menu stub (M1): only the Full/Lite switch for now. Contact (fire-burn) joins in M7.
+// Corner menu: the fire-burn Contact button (always one click away) and the Full/Lite switch.
 export default function CornerMenu() {
   const [open, setOpen] = useState(false);
   const { quality, mode } = useQuality();
@@ -15,15 +16,18 @@ export default function CornerMenu() {
 
   return (
     <div className={`${styles.corner} ${styles.topRight}`}>
-      <button
-        type="button"
-        className={styles.button}
-        aria-expanded={open}
-        aria-controls={panelId}
-        onClick={() => setOpen(!open)}
-      >
-        {open ? ui.closeMenu : ui.menu}
-      </button>
+      <div className={styles.row}>
+        <ContactMenu buttonClassName={styles.button} />
+        <button
+          type="button"
+          className={styles.button}
+          aria-expanded={open}
+          aria-controls={panelId}
+          onClick={() => setOpen(!open)}
+        >
+          {open ? ui.closeMenu : ui.menu}
+        </button>
+      </div>
       {open && (
         <div id={panelId} className={styles.panel}>
           <fieldset className={styles.fieldset}>

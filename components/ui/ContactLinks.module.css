@@ -1,0 +1,63 @@
+.compass {
+  position: relative;
+  width: min(100%, 26rem);
+  aspect-ratio: 1;
+  margin: 0 auto;
+}
+
+.star {
+  position: absolute;
+  inset: 30%;
+  width: 40%;
+  height: 40%;
+  color: var(--gold);
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--gold) 50%, transparent));
+}
+
+.points {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.points li {
+  position: absolute;
+  display: grid;
+  justify-items: center;
+  gap: 0.15rem;
+  transform: translate(-50%, -50%);
+}
+
+/* N, E, S, W */
+.p0 { left: 50%; top: 12%; }
+.p1 { left: 88%; top: 50%; }
+.p2 { left: 50%; top: 88%; }
+.p3 { left: 12%; top: 50%; }
+
+.link {
+  font-family: var(--font-title);
+  font-size: 1.1rem;
+  letter-spacing: 0.06em;
+  color: var(--ivory);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--gold) 60%, transparent);
+}
+
+a.link:hover,
+a.link:focus-visible {
+  color: var(--gold);
+  outline: none;
+}
+
+.link[aria-disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.note {
+  font-family: var(--font-stem);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  opacity: 0.7;
+}

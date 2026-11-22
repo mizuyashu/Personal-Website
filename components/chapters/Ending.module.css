@@ -1,0 +1,98 @@
+.scene,
+.flash,
+.ivory {
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Sword to the stars, over a golden sky. */
+.scene {
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  /* Dusk turning golden: violet above, gold at the horizon, light rising from below. */
+  background:
+    radial-gradient(ellipse at 50% 100%, color-mix(in srgb, var(--ivory) 85%, transparent), transparent 55%),
+    linear-gradient(180deg, color-mix(in srgb, var(--violet) 55%, var(--navy)) 0%, var(--lavender) 52%, var(--gold) 100%);
+}
+
+.sword {
+  height: min(78svh, 46rem);
+  width: auto;
+  overflow: visible;
+  filter: drop-shadow(0 0 14px color-mix(in srgb, var(--ivory) 70%, transparent));
+}
+
+.blade {
+  fill: var(--ivory);
+  stroke: var(--gold);
+  stroke-width: 1;
+}
+
+.fuller {
+  stroke: var(--gold);
+  stroke-width: 1;
+}
+
+.metal {
+  fill: var(--gold);
+}
+
+.line {
+  stroke: var(--ivory);
+  stroke-width: 0.8;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.star {
+  fill: var(--ivory);
+}
+
+.flash {
+  z-index: 3;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 60%, var(--ivory), var(--gold));
+}
+
+/* The end: ivory, a closing line, and a way back to the beginning. */
+.ivory {
+  z-index: 3;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 1.5rem;
+  padding: 1rem;
+  background: var(--ivory);
+  color: var(--ink);
+  text-align: center;
+}
+
+.closing {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: clamp(1.25rem, 3vw, 2rem);
+  letter-spacing: 0.04em;
+}
+
+.again {
+  font-family: var(--font-stem);
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--gold);
+  background: none;
+  color: var(--navy);
+  cursor: pointer;
+}
+
+.again:hover,
+.again:focus-visible {
+  background: var(--gold);
+  color: var(--ink);
+  outline: none;
+}

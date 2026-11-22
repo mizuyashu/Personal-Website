@@ -52,9 +52,14 @@ export function useActiveChapter(): number {
 
 /** Jump to a chapter (compass nav). */
 export function scrollToChapter(id: string, reducedMotion: boolean) {
+  scrollToId(id, reducedMotion);
+}
+
+/** Scroll so the element with this id sits at the top of the screen (`offset`: px of room above it). */
+export function scrollToId(id: string, reducedMotion: boolean, offset = 0) {
   const target = document.getElementById(id);
   if (!target) return;
   const smoother = ScrollSmoother.get();
-  if (smoother) smoother.scrollTo(target, !reducedMotion, "top top");
+  if (smoother) smoother.scrollTo(target, !reducedMotion, `top ${offset}px`);
   else target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
 }

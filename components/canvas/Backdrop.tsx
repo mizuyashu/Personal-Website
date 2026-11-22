@@ -14,7 +14,7 @@ const VOID = new Color(palette.ink);
 const CATHEDRAL = new Color(palette.lavender);
 
 /** Where in each chapter the blend into the next chapter's ground starts. */
-const BLEND_START = [INTRO.fadeOutStart, CORRIDOR.exitStart, 0.75, 0.75, 0.75];
+const BLEND_START = [INTRO.fadeOutStart, CORRIDOR.exitStart, 0.92, 0.9, 0.75];
 
 const scratch = new Color();
 

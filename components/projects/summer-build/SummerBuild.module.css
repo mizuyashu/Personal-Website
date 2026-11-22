@@ -1,0 +1,51 @@
+.exploded {
+  --explode: 0;
+  margin: 0;
+  width: min(100%, 24rem);
+}
+
+.exploded svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* Each plate moves away from the middle one as --explode goes 0 → 1. */
+.layer {
+  transform: translateY(calc(var(--i) * var(--explode) * 58px));
+}
+
+.plate {
+  fill: color-mix(in srgb, var(--ivory) 85%, transparent);
+  stroke: var(--cobalt);
+  stroke-width: 1.5;
+}
+
+.leader {
+  stroke: var(--cobalt);
+  stroke-width: 0.8;
+  stroke-dasharray: 3 3;
+}
+
+.label {
+  font-family: var(--font-stem);
+  font-size: 9px;
+  fill: var(--cobalt);
+}
+
+.axis {
+  stroke: var(--cobalt);
+  stroke-width: 0.6;
+  stroke-dasharray: 6 4;
+  opacity: 0.5;
+}
+
+.caption {
+  margin-top: 0.5rem;
+  text-align: center;
+  font-family: var(--font-stem);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--cobalt);
+}

@@ -1,0 +1,207 @@
+/* Chapter II layout: corridor (3D only) → blueprint hold (the projects). Heights come from
+   lib/corridor.ts so the 3D beats and the HTML line up; the exit is the chapter's remainder. */
+.projects {
+  color: var(--navy);
+}
+
+.corridor {
+  height: calc(var(--corridor-screens) * 100svh);
+}
+
+.blueprint {
+  height: calc(var(--blueprint-screens) * 100svh);
+  display: grid;
+  grid-template-rows: 0.95fr 1.1fr 1.1fr 1.1fr;
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+/* Chapter header, the first thing on the blueprint. */
+.header {
+  align-self: center;
+  text-align: center;
+}
+
+.numeral {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  letter-spacing: 0.4em;
+  color: var(--cobalt);
+}
+
+.title {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: clamp(2.25rem, 7vw, 4.5rem);
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  color: var(--cobalt);
+}
+
+.world,
+.pick {
+  margin: 0.75rem 0 0;
+  font-family: var(--font-stem);
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--cobalt);
+}
+
+.intro {
+  margin: 1.25rem auto 0;
+  max-width: 32rem;
+  font-style: italic;
+  font-size: 1.15rem;
+}
+
+/* Tarot index */
+.index {
+  align-self: center;
+  text-align: center;
+}
+
+.cards {
+  display: flex;
+  justify-content: center;
+  gap: clamp(1rem, 4vw, 3rem);
+  margin-top: 2.5rem;
+  padding-top: 1.2rem; /* room for the hex badges */
+}
+
+/* Hover one card: the others drop to grey (selective colour). */
+.cards:has(> :hover) > :not(:hover) {
+  filter: grayscale(1) opacity(0.6);
+}
+
+/* Project panels */
+.panel {
+  align-self: center;
+  display: grid;
+  gap: 1rem;
+  scroll-margin-top: 4rem;
+}
+
+.panelHead {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--cobalt);
+  padding-bottom: 0.5rem;
+}
+
+.panelNumeral {
+  font-family: var(--font-title);
+  color: var(--cobalt);
+}
+
+.panelTitle {
+  margin: 0;
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  color: var(--ink);
+}
+
+.panelStatus {
+  margin-left: auto;
+  font-family: var(--font-stem);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--cobalt);
+  border: 1px solid var(--cobalt);
+  padding: 0.15rem 0.5rem;
+}
+
+.summary {
+  margin: 0;
+  max-width: 40rem;
+}
+
+.panelBody {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.presentation {
+  display: grid;
+  place-items: center;
+}
+
+.specList {
+  margin: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.specRow {
+  display: grid;
+  grid-template-columns: 9rem 1fr;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.specRow dt {
+  font-family: var(--font-stem);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cobalt);
+  padding-top: 0.2rem;
+}
+
+.specRow dd {
+  margin: 0;
+}
+
+/* Outcome: the big-type moment */
+.outcome {
+  margin: 0.5rem 0 0;
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.outcomeLabel {
+  font-family: var(--font-stem);
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--cobalt);
+}
+
+.outcomeValue {
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: clamp(2rem, 7vw, 4.5rem);
+  line-height: 1;
+  color: var(--cobalt);
+  -webkit-text-stroke: 1px var(--cobalt);
+}
+
+@media (max-width: 720px) {
+  .panelBody {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+
+  .specRow {
+    grid-template-columns: 7.5rem 1fr;
+    font-size: 0.85rem;
+  }
+
+  .presentation > * {
+    max-width: 15rem;
+  }
+
+  .summary {
+    font-size: 0.95rem;
+  }
+}

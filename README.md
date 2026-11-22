@@ -42,12 +42,16 @@ app/
 ├── globals.css           palette variables, base styles
 └── page.tsx              the whole journey, chapters in order
 components/
-├── canvas/               the one fixed <Canvas>: World, CameraRig, Backdrop, Dust, placeholders
-│   └── scenes/           Void, Sun (intro), Arches, Blueprint (chapter II corridor + skylight)
-├── chapters/             Journey (scroll timeline), Chapter, Intro (name mark + flash), Filigree, ScrollHint
-└── ui/                   Loader, CornerMenu (Full/Lite), CompassNav, CompassStar
-content/                  site.ts, chapters.ts (all copy lives here)
-lib/                      palette, gsap, scroll, intro, corridor, loading, quality, motion
+├── canvas/               the one fixed <Canvas>: World, CameraRig, Backdrop, Dust, layout (camera path)
+│   └── scenes/           Void, Sun, Arches, Blueprint, Dawn, Embers, Bonfire
+├── chapters/             Journey (scroll timeline), Chapter, one component per chapter,
+│                         fixed overlays (Intro, Constellation, Descent, Ending)
+├── projects/             one folder per project; each owns its presentation
+└── ui/                   Loader, CornerMenu, ContactMenu, CompassNav, TarotCard, HudWindow,
+                          StatusWindow, BlueprintHud, ContactLinks, CompassStar
+content/                  all copy and data (TODO(content) marks placeholders)
+lib/                      palette, gsap, scroll, quality, motion, loading, and per-chapter beats
+                          (intro, corridor, dawn, embers, bonfire)
 shaders/                  .glsl (imported as strings via loaders/glsl-loader.js)
 public/logos/             design team and Queen’s logos
 docs/                     vision.md, milestones.md

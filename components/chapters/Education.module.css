@@ -1,0 +1,105 @@
+/* Chapter III layout: opening (header) → open sky (constellation overlay) → the record.
+   Heights come from lib/dawn.ts so the overlay beats and the HTML line up. */
+.education {
+  height: calc(var(--screens) * 100svh);
+  display: grid;
+  grid-template-rows: calc(var(--opening-screens) * 100svh) 1fr calc(var(--record-screens) * 100svh);
+  color: var(--navy);
+  text-align: center;
+}
+
+.header {
+  align-self: center;
+  padding-top: 10svh;
+}
+
+.numeral {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  letter-spacing: 0.4em;
+  color: var(--gold);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--navy) 30%, transparent);
+}
+
+.title {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: clamp(2.25rem, 7vw, 4.5rem);
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+}
+
+.world {
+  margin: 0.75rem 0 0;
+  font-family: var(--font-stem);
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+
+.school {
+  margin: 1.5rem 0 0;
+  font-family: var(--font-title);
+  font-size: clamp(1rem, 2.4vw, 1.35rem);
+  letter-spacing: 0.05em;
+}
+
+.intro {
+  margin: 0.75rem auto 0;
+  max-width: 32rem;
+  font-style: italic;
+}
+
+/* The record: parchment card on the sky */
+.record {
+  align-self: center;
+  justify-self: center;
+  width: min(100%, 34rem);
+  padding: 1.75rem 2rem;
+  border: 1px solid var(--gold);
+  outline: 1px solid color-mix(in srgb, var(--gold) 50%, transparent);
+  outline-offset: 4px;
+  background: color-mix(in srgb, var(--ivory) 88%, transparent);
+  text-align: left;
+}
+
+.recordTitle {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-stem);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--navy);
+}
+
+.recordTitle:not(:first-child) {
+  margin-top: 1.5rem;
+}
+
+.timeline,
+.awards {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.timeline li {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 1rem;
+}
+
+.when {
+  font-family: var(--font-title);
+  color: var(--navy);
+}
+
+.awards li::before {
+  content: "✦ ";
+  color: var(--gold);
+}

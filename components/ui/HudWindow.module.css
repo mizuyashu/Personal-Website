@@ -1,0 +1,50 @@
+.window {
+  border: 1px solid var(--cobalt);
+  background: color-mix(in srgb, var(--ivory) 92%, transparent);
+  color: var(--navy);
+  box-shadow: 4px 4px 0 color-mix(in srgb, var(--cobalt) 18%, transparent);
+  text-align: left;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.3rem 0.3rem 0.3rem 0.7rem;
+  background: var(--cobalt);
+  color: var(--ivory);
+}
+
+.title {
+  font-family: var(--font-stem);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.close {
+  width: 1.6rem;
+  height: 1.6rem;
+  border: 1px solid color-mix(in srgb, var(--ivory) 60%, transparent);
+  background: none;
+  color: var(--ivory);
+  font-family: var(--font-stem);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.close:hover {
+  background: var(--ivory);
+  color: var(--cobalt);
+}
+
+.close:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.body {
+  padding: 0.9rem 1rem 1rem;
+}

@@ -1,0 +1,161 @@
+/* Chapter IV layout: the descent (overlay only) → header → webtoon panels. */
+.about {
+  height: calc(var(--screens) * 100svh);
+  display: grid;
+  grid-template-rows: calc(var(--descent-screens) * 100svh) auto 1fr;
+  color: var(--ivory);
+}
+
+.header {
+  padding: 18svh 0 10svh;
+  text-align: center;
+}
+
+.numeral {
+  margin: 0;
+  font-family: var(--font-title);
+  letter-spacing: 0.4em;
+  color: var(--ember);
+}
+
+.title {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: clamp(2.25rem, 7vw, 4.5rem);
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  text-shadow: 0 0 24px color-mix(in srgb, var(--ember) 45%, transparent);
+}
+
+.world {
+  margin: 0.75rem 0 0;
+  font-family: var(--font-stem);
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.intro {
+  margin: 1.25rem auto 0;
+  max-width: 32rem;
+  font-style: italic;
+}
+
+/* Webtoon panels: tilted frames, wide gutters, alternating sides. */
+.panels {
+  display: grid;
+  gap: 16svh;
+  max-width: 56rem;
+  margin: 0 auto;
+  width: 100%;
+  align-content: start;
+}
+
+.panel {
+  position: relative;
+  padding: 1.5rem 1.75rem;
+  border: 1px solid color-mix(in srgb, var(--ember) 70%, transparent);
+  background: color-mix(in srgb, var(--ink) 75%, transparent);
+  box-shadow: 0 0 40px color-mix(in srgb, var(--ember) 18%, transparent);
+}
+
+.panel p {
+  margin: 0.4rem 0 0;
+}
+
+.games {
+  justify-self: start;
+  width: min(100%, 30rem);
+  transform: rotate(-1.5deg);
+}
+
+.music {
+  justify-self: end;
+  width: min(100%, 26rem);
+  transform: rotate(1deg);
+}
+
+.cat {
+  justify-self: start;
+  width: min(100%, 22rem);
+  transform: rotate(-0.8deg);
+}
+
+.moments {
+  justify-self: stretch;
+}
+
+.panelTitle {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-stem);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.relics {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.relics li {
+  padding: 0.25rem 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--gold) 55%, transparent);
+  font-family: var(--font-title);
+  font-size: 0.95rem;
+}
+
+.note {
+  font-family: var(--font-stem);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+}
+
+/* Photo placeholders: halftone in ember, framed. */
+.photo {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 5;
+  padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--gold) 50%, transparent);
+  background:
+    radial-gradient(color-mix(in srgb, var(--ember) 45%, transparent) 1px, transparent 1.5px) 0 0 / 7px 7px,
+    var(--ink);
+  font-family: var(--font-stem);
+  font-size: 0.7rem;
+  text-align: center;
+  color: var(--ivory);
+}
+
+.strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.strip .photo:nth-child(2) {
+  transform: translateY(1.5rem) rotate(1.5deg);
+}
+
+@media (max-width: 600px) {
+  .panels {
+    gap: 10svh;
+  }
+
+  .strip {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .strip .photo:nth-child(3) {
+    display: none;
+  }
+}

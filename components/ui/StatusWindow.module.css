@@ -1,0 +1,38 @@
+.window {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 12rem;
+  padding: 0.55rem 0.9rem 0.6rem;
+  border: 1px solid var(--gold);
+  border-left-width: 3px;
+  background: color-mix(in srgb, var(--navy) 85%, transparent);
+  color: var(--ivory);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--navy) 25%, transparent);
+}
+
+.label {
+  font-family: var(--font-stem);
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.text {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .window {
+    animation: arrive 0.45s ease-out both;
+  }
+}
+
+@keyframes arrive {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+}
