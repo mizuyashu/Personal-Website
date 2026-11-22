@@ -30,7 +30,8 @@ import { CROSSING_Z, FLOOR_Y, NAVE_HALF, SKYLIGHT_Y, VAULT_Y, seededRandom } fro
 // (Blueprint.tsx): a slow heavy start, then a surge, the tower's lit windows streaming past.
 // All geometry is generated; the tower walls are one self-lit shader.
 
-const HALL_START_Z = -9;
+// The hall starts behind the entry pose (layout.ts ENTRY), so chapter II opens inside the nave.
+const HALL_START_Z = -3;
 const HALL_END_Z = -35;
 const AISLE_X = 6.8;
 const TOWER_FRONT_Z = CROSSING_Z + NAVE_HALF;
@@ -41,7 +42,7 @@ const PORTAL_Z = [-12.5, -16, -19.5, -23]; // chapters II–V
 const PORTAL_RADIUS = 2.6;
 const PORTAL_SPRING = FLOOR_Y + 3.6;
 
-const colonnadeZ = Array.from({ length: 14 }, (_, i) => -11 - i * 1.75);
+const colonnadeZ = Array.from({ length: 18 }, (_, i) => -4 - i * 1.75);
 const ribZ = colonnadeZ.filter((z) => z > TOWER_FRONT_Z + 0.5 || z < TOWER_BACK_Z - 0.5);
 const WINDOW_Z = colonnadeZ.slice(0, -1).map((z) => z - 0.875);
 const LIFT_RADIUS = 2.1;
@@ -469,8 +470,8 @@ export default function Arches({ lite, reducedMotion }: Props) {
         </mesh>
       ))}
       {[Math.PI / 4, -Math.PI / 4].map((angle, i) => (
-        <mesh key={angle} position={[0, FLOOR_Y + 20, CROSSING_Z]} rotation={[0, angle, 0]}>
-          <planeGeometry args={[NAVE_HALF * 1.3, 40]} />
+        <mesh key={angle} position={[0, (FLOOR_Y + SKYLIGHT_Y) / 2, CROSSING_Z]} rotation={[0, angle, 0]}>
+          <planeGeometry args={[NAVE_HALF * 1.3, SKYLIGHT_Y - FLOOR_Y]} />
           <shaderMaterial
             ref={(m) => {
               shaftMaterials.current[SHAFTS.length + i] = m;

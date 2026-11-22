@@ -2,90 +2,201 @@
 
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { AdditiveBlending, Color, type Group, type ShaderMaterial, type Mesh } from "three";
-import { INTRO, clamp01, smoothstep } from "@/lib/intro";
+import { AdditiveBlending, Color, type Group, type Mesh, type ShaderMaterial } from "three";
+import { INTRO, clamp01, kindleAmount, smoothstep } from "@/lib/intro";
 import { palette } from "@/lib/palette";
 import { journey } from "@/lib/scroll";
+import ashVert from "@/shaders/ash.vert.glsl";
 import embersVert from "@/shaders/embers.vert.glsl";
 import embersFrag from "@/shaders/embers.frag.glsl";
-import glowlinesVert from "@/shaders/glowlines.vert.glsl";
-import glowlinesFrag from "@/shaders/glowlines.frag.glsl";
+import dyingStarVert from "@/shaders/dyingstar.vert.glsl";
+import dyingStarFrag from "@/shaders/dyingstar.frag.glsl";
+import brokenLinesVert from "@/shaders/brokenlines.vert.glsl";
+import brokenLinesFrag from "@/shaders/brokenlines.frag.glsl";
 import planeVert from "@/shaders/plane.vert.glsl";
+import eclipseFrag from "@/shaders/eclipse.frag.glsl";
 import glowFrag from "@/shaders/glow.frag.glsl";
 import { seededRandom } from "../layout";
 
 type Props = { lite: boolean; reducedMotion: boolean };
 
-// Chapter I, beat 2: black void, drifting embers, short glowing lines,
-// and a light rising from below that bursts into the flash. Follows the camera.
+// Chapter I, the void: dying before the radiance (docs/vision.md §17). A dying world held in a
+// cycle of kindling. A huge dying sun hangs low (a black disc in a broken ring of burning, the
+// cracked compass star with one point missing); the sky is full of dying stars in broken
+// constellations, with one empty socket (yours); ash falls in gusts and only a few embers rise.
+// The fire tries to catch three times and dies (KINDLES in lib/intro.ts); the fourth time it
+// catches, rising with the dead sun into the flash, which rekindles it as the compass-star sun.
+// No gold or ivory until the kindling: the colour withheld is the contrast. Follows the camera.
+
+const ECLIPSE_DISTANCE = 10;
+const ECLIPSE_SIZE = 13;
+const SKY_Z = [-28, -46] as const;
+/** Where the final, successful kindling begins: as the last failed one dies. */
+const KINDLE_FINAL = 0.3;
+
+const mix = (a: string, b: string, t: number) => new Color(a).lerp(new Color(b), t);
+const EMBER = new Color(palette.ember);
+const ROSE = new Color(palette.rose);
+const GOLD = new Color(palette.gold);
+const IVORY = new Color(palette.ivory);
+
+/** Broken constellations: a few groups of dying stars joined by lines, plus loose stars. */
+function buildSky(fieldCount: number) {
+  const random = seededRandom(1733);
+  const stars: { x: number; y: number; z: number; seed: number; scale: number; life: number }[] = [];
+  const lines: number[] = [];
+  const lineSeeds: number[] = [];
+  const along: number[] = [];
+  const link = (a: (typeof stars)[number], b: (typeof stars)[number]) => {
+    lines.push(a.x, a.y, a.z, b.x, b.y, b.z);
+    const seed = random();
+    lineSeeds.push(seed, seed);
+    along.push(0, 1);
+  };
+
+  const groups = [
+    [-22, 9], [-9, 13], [7, 11], [21, 8], [-27, -2], [26, -3], [-14, 3], [15, 2],
+  ];
+  let socket = { x: 0, y: 0, z: 0 };
+  groups.forEach(([gx, gy], g) => {
+    const z = SKY_Z[0] + (SKY_Z[1] - SKY_Z[0]) * random();
+    const count = 4 + Math.floor(random() * 4);
+    let x = gx;
+    let y = gy;
+    const members: (typeof stars)[number][] = [];
+    for (let i = 0; i < count; i++) {
+      x += (random() - 0.5) * 6;
+      y += (random() - 0.5) * 4.5;
+      const star = { x, y, z: z + (random() - 0.5) * 3, seed: random(), scale: 1.6 + random() * 2.2, life: random() * 0.6 };
+      members.push(star);
+      if (i > 0) link(members[i - 1], star);
+    }
+    // A branch, so they read as figures rather than chains.
+    if (count > 4) link(members[1], members[count - 1]);
+    // The group nearest the top centre has an empty socket at its end: yours.
+    if (g === 2) {
+      const last = members[members.length - 1];
+      socket = { x: last.x + 4.5, y: last.y + 2.5, z: last.z };
+      link(last, { ...socket, seed: 0, scale: 0, life: 0 });
+    }
+    stars.push(...members);
+  });
+  // Loose stars: most dead rings, a few cold glints of distant starlight.
+  for (let i = 0; i < fieldCount; i++) {
+    stars.push({
+      x: (random() - 0.5) * 70,
+      y: (random() - 0.5) * 38,
+      z: SKY_Z[0] + (SKY_Z[1] - SKY_Z[0]) * random(),
+      seed: random(),
+      scale: random() < 0.3 ? 0.8 + random() : 0.9 + random() * 1.6,
+      life: random() < 0.3 ? 0.9 + random() * 0.1 : random() * 0.5,
+    });
+  }
+
+  return {
+    positions: new Float32Array(stars.flatMap((s) => [s.x, s.y, s.z])),
+    seeds: new Float32Array(stars.map((s) => s.seed)),
+    scales: new Float32Array(stars.map((s) => s.scale)),
+    lives: new Float32Array(stars.map((s) => s.life)),
+    lines: new Float32Array(lines),
+    lineSeeds: new Float32Array(lineSeeds),
+    along: new Float32Array(along),
+    socket,
+  };
+}
+
+/** Ash: clumped, not evenly spread (disorder). */
+function buildAsh(count: number) {
+  const random = seededRandom(7);
+  const clumps = Array.from({ length: 9 }, () => [(random() - 0.5) * 22, (random() - 0.5) * 16, -4 - random() * 10]);
+  const positions = new Float32Array(count * 3);
+  const seeds = new Float32Array(count);
+  for (let i = 0; i < count; i++) {
+    if (random() < 0.65) {
+      const [cx, cy, cz] = clumps[Math.floor(random() * clumps.length)];
+      const spread = 0.6 + random() * 2.2;
+      positions.set([cx + (random() - 0.5) * spread * 2, cy + (random() - 0.5) * spread * 3, cz + (random() - 0.5) * spread], i * 3);
+    } else {
+      positions.set([(random() - 0.5) * 24, (random() - 0.5) * 16, -3 - random() * 14], i * 3);
+    }
+    seeds[i] = random();
+  }
+  return { positions, seeds };
+}
+
+/** A few embers rising toward the light (the only things that do). */
+function buildRisers(count: number) {
+  const random = seededRandom(19);
+  const positions = new Float32Array(count * 3);
+  const seeds = new Float32Array(count);
+  for (let i = 0; i < count; i++) {
+    positions.set([(random() - 0.5) * 7, (random() - 0.5) * 16, -6 - random() * 5], i * 3);
+    seeds[i] = random();
+  }
+  return { positions, seeds };
+}
+
 export default function Void({ lite, reducedMotion }: Props) {
   const group = useRef<Group>(null);
-  const embers = useRef<ShaderMaterial>(null);
-  const lines = useRef<ShaderMaterial>(null);
+  const drift = useRef<Group>(null);
+  const eclipseMesh = useRef<Mesh>(null);
+  const eclipse = useRef<ShaderMaterial>(null);
   const glowMesh = useRef<Mesh>(null);
   const glow = useRef<ShaderMaterial>(null);
+  const stars = useRef<ShaderMaterial>(null);
+  const lines = useRef<ShaderMaterial>(null);
+  const ash = useRef<ShaderMaterial>(null);
+  const risers = useRef<ShaderMaterial>(null);
 
-  // Sparse on purpose: scattered and doomy, with plenty of empty dark (Michael's review:
-  // the earlier 1500 embers + 80 lines read as messy).
-  const emberCount = lite ? 220 : 520;
-  const lineCount = lite ? 10 : 22;
+  const sky = useMemo(() => buildSky(lite ? 60 : 150), [lite]);
+  const ashField = useMemo(() => buildAsh(lite ? 260 : 700), [lite]);
+  const riserField = useMemo(() => buildRisers(lite ? 18 : 40), [lite]);
 
-  const emberData = useMemo(() => {
-    const random = seededRandom(7);
-    const positions = new Float32Array(emberCount * 3);
-    const seeds = new Float32Array(emberCount);
-    for (let i = 0; i < emberCount; i++) {
-      // Keep the middle mostly empty so the rising light has dark around it.
-      let x = (random() - 0.5) * 22;
-      if (Math.abs(x) < 3.5 && random() < 0.65) x = Math.sign(x || 1) * (3.5 + random() * 7.5);
-      positions[i * 3] = x;
-      positions[i * 3 + 1] = (random() - 0.5) * 16;
-      // Deep spread: a few near and large, most far and faint.
-      positions[i * 3 + 2] = -4 - Math.pow(random(), 0.6) * 20;
-      seeds[i] = random();
-    }
-    return { positions, seeds };
-  }, [emberCount]);
-
-  const lineData = useMemo(() => {
-    const random = seededRandom(21);
-    const positions = new Float32Array(lineCount * 6);
-    const seeds = new Float32Array(lineCount * 2);
-    for (let i = 0; i < lineCount; i++) {
-      const side = random() < 0.5 ? -1 : 1;
-      const x = side * (2.5 + random() * 7);
-      const y = (random() - 0.5) * 9;
-      const z = -6 - random() * 8;
-      const angle = random() * Math.PI * 2;
-      const length = 0.3 + random() * 0.9;
-      positions.set([x, y, z, x + Math.cos(angle) * length, y + Math.sin(angle) * length, z], i * 6);
-      const seed = random();
-      seeds[i * 2] = seed;
-      seeds[i * 2 + 1] = seed;
-    }
-    return { positions, seeds };
-  }, [lineCount]);
-
-  const emberUniforms = useMemo(
-    () => ({
-      uTime: { value: 0 },
-      uSize: { value: 62 },
-      uPixelRatio: { value: 1 },
-      uOpacity: { value: 1 },
-      uEmberShare: { value: 0.12 },
-      uGold: { value: new Color(palette.gold) },
-      uEmber: { value: new Color(palette.ember) },
-    }),
-    [],
-  );
-  const lineUniforms = useMemo(
-    () => ({ uTime: { value: 0 }, uOpacity: { value: 1 }, uColor: { value: new Color(palette.gold) } }),
-    [],
-  );
-  const glowUniforms = useMemo(
-    () => ({ uOpacity: { value: 1 }, uGold: { value: new Color(palette.gold) }, uIvory: { value: new Color(palette.ivory) } }),
-    [],
-  );
+  const uniforms = useMemo(() => {
+    const paleEmber = mix(palette.ember, palette.rose, 0.35);
+    return {
+      eclipse: {
+        uTime: { value: 0 },
+        uLife: { value: 0.2 },
+        uKindle: { value: 0 },
+        uOpacity: { value: 1 },
+        // Blacker than the sky around it: a hole.
+        uDisc: { value: new Color(palette.ink).multiplyScalar(0.35) },
+        uCorona: { value: paleEmber },
+        uHot: { value: new Color(palette.gold) },
+        uHaze: { value: new Color(palette.crimsonViolet) },
+      },
+      glow: { uOpacity: { value: 0 }, uGold: { value: new Color(palette.ember) }, uIvory: { value: new Color(palette.rose) } },
+      stars: {
+        uTime: { value: 0 },
+        uSize: { value: 220 },
+        uPixelRatio: { value: 1 },
+        uOpacity: { value: 1 },
+        uRing: { value: paleEmber },
+        uCold: { value: mix(palette.sky, palette.lavender, 0.5) },
+        uDisc: { value: new Color(palette.ink) },
+      },
+      lines: { uTime: { value: 0 }, uOpacity: { value: 0.45 }, uColor: { value: mix(palette.crimsonViolet, palette.rose, 0.3) } },
+      ash: {
+        uTime: { value: 0 },
+        uSize: { value: 55 },
+        uPixelRatio: { value: 1 },
+        uOpacity: { value: 0.9 },
+        uEmberShare: { value: 0.05 },
+        uGold: { value: mix(palette.lavender, palette.navy, 0.55) },
+        uEmber: { value: new Color(palette.ember) },
+      },
+      risers: {
+        uTime: { value: 0 },
+        uSize: { value: 70 },
+        uPixelRatio: { value: 1 },
+        uOpacity: { value: 1 },
+        uEmberShare: { value: 0.6 },
+        uGold: { value: paleEmber },
+        uEmber: { value: new Color(palette.ember) },
+      },
+    };
+  }, []);
 
   useFrame((state, delta) => {
     if (!group.current) return;
@@ -95,67 +206,99 @@ export default function Void({ lite, reducedMotion }: Props) {
     if (!visible) return;
     group.current.position.z = state.camera.position.z;
 
-    const time = reducedMotion ? 4 : (embers.current?.uniforms.uTime.value ?? 0) + delta;
-    if (embers.current) {
-      embers.current.uniforms.uTime.value = time;
-      embers.current.uniforms.uPixelRatio.value = state.gl.getPixelRatio();
+    const time = reducedMotion ? 4 : (stars.current?.uniforms.uTime.value ?? 0) + delta;
+    const pixelRatio = state.gl.getPixelRatio();
+    for (const material of [stars.current, lines.current, ash.current, risers.current]) {
+      if (!material) continue;
+      material.uniforms.uTime.value = time;
+      if (material.uniforms.uPixelRatio) material.uniforms.uPixelRatio.value = pixelRatio;
     }
-    if (lines.current) lines.current.uniforms.uTime.value = time;
 
-    // The light rises through the void, then swells into the flash.
+    // The fire tries and fails (no flashes with reduced motion), then catches for real.
+    const kindle = reducedMotion ? 0 : kindleAmount(p);
+    const rise = smoothstep(KINDLE_FINAL, INTRO.voidEnd, p);
+    const burst = clamp01((p - INTRO.voidEnd) / (INTRO.flashPeak - INTRO.voidEnd));
+
+    // The dead sun: low and nearly out; each kindling flares it; the final one lifts it into place.
+    if (eclipse.current && eclipseMesh.current) {
+      eclipse.current.uniforms.uTime.value = time;
+      eclipse.current.uniforms.uKindle.value = kindle + burst;
+      eclipse.current.uniforms.uLife.value = 0.15 + rise * 0.85;
+      eclipseMesh.current.position.y = -2.6 + rise * 2.6;
+    }
+    // The light inside it: a faint ember that swells with each try, then becomes the flash.
     if (glowMesh.current && glow.current) {
-      const rise = smoothstep(0, INTRO.voidEnd, p);
-      const burst = clamp01((p - INTRO.voidEnd) / (INTRO.flashPeak - INTRO.voidEnd));
-      const scale = 0.9 + rise * 1.6 + burst * burst * 14;
-      glowMesh.current.position.y = -3.6 + rise * 3.6;
+      const scale = 0.5 + kindle * 2.2 + rise * 1.8 + burst * burst * 16;
+      glowMesh.current.position.y = -2.6 + rise * 2.6;
       glowMesh.current.scale.setScalar(scale);
-      glow.current.uniforms.uOpacity.value = 0.6 + rise * 0.4;
+      glow.current.uniforms.uOpacity.value = 0.25 + kindle * 0.9 + rise * 0.75;
+      // Ember-red until it catches; gold and ivory only as the radiance comes.
+      const catching = Math.max(rise, burst);
+      glow.current.uniforms.uGold.value.lerpColors(EMBER, GOLD, catching);
+      glow.current.uniforms.uIvory.value.lerpColors(ROSE, IVORY, catching);
+    }
+
+    // Uneasy drift: the whole sky slowly tilts and sways (not with reduced motion).
+    if (drift.current && !reducedMotion) {
+      const t = state.clock.elapsedTime;
+      drift.current.rotation.z = Math.sin(t * 0.05) * 0.05 + Math.sin(t * 0.13 + 1.3) * 0.02;
+      drift.current.position.x = Math.sin(t * 0.07) * 0.4;
+      drift.current.position.y = Math.sin(t * 0.09 + 0.7) * 0.25;
     }
   });
 
   return (
     <group ref={group}>
-      <points key={`embers-${emberCount}`}>
-        <bufferGeometry>
-          <bufferAttribute attach="attributes-position" args={[emberData.positions, 3]} />
-          <bufferAttribute attach="attributes-aSeed" args={[emberData.seeds, 1]} />
-        </bufferGeometry>
-        <shaderMaterial
-          ref={embers}
-          vertexShader={embersVert}
-          fragmentShader={embersFrag}
-          uniforms={emberUniforms}
-          transparent
-          depthWrite={false}
-          blending={AdditiveBlending}
-        />
-      </points>
-      <lineSegments key={`lines-${lineCount}`}>
-        <bufferGeometry>
-          <bufferAttribute attach="attributes-position" args={[lineData.positions, 3]} />
-          <bufferAttribute attach="attributes-aSeed" args={[lineData.seeds, 1]} />
-        </bufferGeometry>
-        <shaderMaterial
-          ref={lines}
-          vertexShader={glowlinesVert}
-          fragmentShader={glowlinesFrag}
-          uniforms={lineUniforms}
-          transparent
-          depthWrite={false}
-          blending={AdditiveBlending}
-        />
-      </lineSegments>
-      <mesh ref={glowMesh} position={[0, -3.6, -8]}>
+      <group ref={drift}>
+        {/* The sky of dying stars and their broken constellations */}
+        <points key={`stars-${lite}`} frustumCulled={false}>
+          <bufferGeometry>
+            <bufferAttribute attach="attributes-position" args={[sky.positions, 3]} />
+            <bufferAttribute attach="attributes-aSeed" args={[sky.seeds, 1]} />
+            <bufferAttribute attach="attributes-aScale" args={[sky.scales, 1]} />
+            <bufferAttribute attach="attributes-aLife" args={[sky.lives, 1]} />
+          </bufferGeometry>
+          <shaderMaterial ref={stars} vertexShader={dyingStarVert} fragmentShader={dyingStarFrag} uniforms={uniforms.stars} transparent depthWrite={false} />
+        </points>
+        <lineSegments key={`lines-${lite}`} frustumCulled={false}>
+          <bufferGeometry>
+            <bufferAttribute attach="attributes-position" args={[sky.lines, 3]} />
+            <bufferAttribute attach="attributes-aSeed" args={[sky.lineSeeds, 1]} />
+            <bufferAttribute attach="attributes-aAlong" args={[sky.along, 1]} />
+          </bufferGeometry>
+          <shaderMaterial ref={lines} vertexShader={brokenLinesVert} fragmentShader={brokenLinesFrag} uniforms={uniforms.lines} transparent depthWrite={false} blending={AdditiveBlending} />
+        </lineSegments>
+        {/* The empty socket: a place in the sky where a star should be. Yours. */}
+        <mesh position={[sky.socket.x, sky.socket.y, sky.socket.z]}>
+          <ringGeometry args={[0.55, 0.62, 48]} />
+          <meshBasicMaterial color={palette.rose} transparent opacity={0.28} depthWrite={false} fog={false} />
+        </mesh>
+
+        {/* Falling ash, and the few embers that still rise */}
+        <points key={`ash-${lite}`} frustumCulled={false}>
+          <bufferGeometry>
+            <bufferAttribute attach="attributes-position" args={[ashField.positions, 3]} />
+            <bufferAttribute attach="attributes-aSeed" args={[ashField.seeds, 1]} />
+          </bufferGeometry>
+          <shaderMaterial ref={ash} vertexShader={ashVert} fragmentShader={embersFrag} uniforms={uniforms.ash} transparent depthWrite={false} />
+        </points>
+        <points key={`risers-${lite}`} frustumCulled={false}>
+          <bufferGeometry>
+            <bufferAttribute attach="attributes-position" args={[riserField.positions, 3]} />
+            <bufferAttribute attach="attributes-aSeed" args={[riserField.seeds, 1]} />
+          </bufferGeometry>
+          <shaderMaterial ref={risers} vertexShader={embersVert} fragmentShader={embersFrag} uniforms={uniforms.risers} transparent depthWrite={false} blending={AdditiveBlending} />
+        </points>
+      </group>
+
+      {/* The dying sun, low in the frame, and the light trying to catch inside it */}
+      <mesh ref={eclipseMesh} position={[0, -2.6, -ECLIPSE_DISTANCE]} renderOrder={1}>
+        <planeGeometry args={[ECLIPSE_SIZE, ECLIPSE_SIZE]} />
+        <shaderMaterial ref={eclipse} vertexShader={planeVert} fragmentShader={eclipseFrag} uniforms={uniforms.eclipse} transparent depthWrite={false} fog={false} />
+      </mesh>
+      <mesh ref={glowMesh} position={[0, -2.6, -ECLIPSE_DISTANCE + 0.1]} renderOrder={2}>
         <planeGeometry args={[1, 1]} />
-        <shaderMaterial
-          ref={glow}
-          vertexShader={planeVert}
-          fragmentShader={glowFrag}
-          uniforms={glowUniforms}
-          transparent
-          depthWrite={false}
-          blending={AdditiveBlending}
-        />
+        <shaderMaterial ref={glow} vertexShader={planeVert} fragmentShader={glowFrag} uniforms={uniforms.glow} transparent depthWrite={false} blending={AdditiveBlending} fog={false} />
       </mesh>
     </group>
   );

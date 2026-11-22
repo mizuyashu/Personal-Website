@@ -1,10 +1,10 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
-import { ScrollSmoother, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { gsap, ScrollSmoother, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { INTRO } from "@/lib/intro";
 import { useReducedMotion } from "@/lib/motion";
-import { setJourneyPosition } from "@/lib/scroll";
+import { journey, setJourneyPosition } from "@/lib/scroll";
 
 // The master scroll timeline. One ScrollTrigger spans the page and turns scroll into
 // the journey position (chapter index + progress), which the canvas and overlays read.
@@ -48,16 +48,24 @@ export default function Journey({ children }: { children: ReactNode }) {
       const scrollOf = (self: ScrollTrigger) => Math.round(self.start + self.progress * (self.end - self.start));
       const update = (self: ScrollTrigger) => setJourneyPosition(positionOf(scrollOf(self)), bounds.length - 1);
 
-      // Resting inside the flash window glides to its near side in the scroll direction.
-      const snapTo = (value: number, self?: ScrollTrigger) => {
-        if (!self || bounds.length < 2) return value;
-        const range = self.end - self.start;
-        const p = positionOf(self.start + value * range);
-        if (p <= INTRO.snapFrom || p >= INTRO.snapTo) return value;
-        const target = self.direction > 0 ? INTRO.snapTo : INTRO.snapFrom;
+      // The flash snap. Resting inside the flash window glides to its near side in the
+      // scroll direction, so the flash is never left half-done. Our own, not GSAP's `snap`:
+      // GSAP's snap projects momentum and could glide the page somewhere else entirely, even
+      // back to the top. Rule (Michael): the page never moves the visitor back to the start.
+      // The only targets here are the two edges of the flash window, never the top.
+      const snapEnabled = !reducedMotion && !devNoSnap();
+      let direction = 1;
+      const settle = gsap.delayedCall(0.16, () => {
+        if (bounds.length < 2) return;
+        const p = journey.position;
+        if (p <= INTRO.snapFrom || p >= INTRO.snapTo) return;
+        const target = direction > 0 ? INTRO.snapTo : INTRO.snapFrom;
         const scroll = bounds[0] + target * (bounds[1] - bounds[0]);
-        return (scroll - self.start) / range;
-      };
+        if (scroll <= 0) return;
+        const smoother = ScrollSmoother.get();
+        if (smoother) smoother.scrollTo(scroll, true);
+        else window.scrollTo({ top: scroll, behavior: "smooth" });
+      }).pause();
 
       ScrollTrigger.create({
         trigger: contentEl,
@@ -67,10 +75,14 @@ export default function Journey({ children }: { children: ReactNode }) {
           measure(self.end);
           update(self);
         },
-        onUpdate: update,
-        // Dev only: ?nosnap turns the snap off so browser tests can jump straight to a position.
-        snap: reducedMotion || devNoSnap() ? undefined : { snapTo, duration: { min: 0.4, max: 1 }, delay: 0.12, ease: "power2.inOut" },
+        onUpdate: (self) => {
+          update(self);
+          if (!snapEnabled) return;
+          direction = self.direction;
+          settle.restart(true);
+        },
       });
+      return () => settle.kill();
     },
     { dependencies: [reducedMotion], revertOnUpdate: true },
   );

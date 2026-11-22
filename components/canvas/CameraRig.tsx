@@ -29,7 +29,8 @@ const target = new Quaternion();
 /** Orientation for a pose: pitched up, or aimed back at the blueprint during a pull-off. */
 function orientation(pose: CameraPose, out: Quaternion) {
   if (pose.aim) return out.setFromRotationMatrix(aimMatrix.lookAt(eye.set(pose.x, pose.y, pose.z), centre, AIM_UP));
-  return out.setFromEuler(euler.set(pose.pitch, 0, 0));
+  // YXZ: turn to the heading first, then tilt up.
+  return out.setFromEuler(euler.set(pose.pitch, pose.yaw, 0, "YXZ"));
 }
 
 // Reads the master scroll position and moves the camera. Never creates its own ScrollTrigger.

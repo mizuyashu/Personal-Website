@@ -1,0 +1,100 @@
+/* Game-style controls prompt: bottom centre, small, gold-ruled like the status windows. */
+.card {
+  position: fixed;
+  z-index: 10;
+  left: 50%;
+  bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--gold) 55%, transparent);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--ink) 82%, transparent);
+  color: var(--ivory);
+  backdrop-filter: blur(6px);
+  transform: translate(-50%, 0);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.card[data-shown="true"] {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .card {
+    transform: translate(-50%, 0.5rem);
+    transition:
+      opacity 0.35s ease,
+      transform 0.35s ease,
+      visibility 0s linear 0.35s;
+  }
+
+  .card[data-shown="true"] {
+    transform: translate(-50%, 0);
+    transition:
+      opacity 0.35s ease,
+      transform 0.35s ease;
+  }
+}
+
+.title {
+  font-family: var(--font-stem);
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.rows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.keys {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.key {
+  min-width: 1.5rem;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid color-mix(in srgb, var(--ivory) 55%, transparent);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  font-family: var(--font-stem);
+  font-size: 0.65rem;
+  text-align: center;
+  color: var(--ivory);
+}
+
+.action {
+  font-family: var(--font-stem);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ivory) 80%, transparent);
+}
+
+@media (max-width: 600px) {
+  .card {
+    bottom: 4.5rem;
+    max-width: calc(100vw - 2rem);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+}

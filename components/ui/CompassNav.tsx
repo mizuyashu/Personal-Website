@@ -40,6 +40,7 @@ export default function CompassNav() {
       <button
         type="button"
         className={styles.compassButton}
+        data-compass-toggle
         aria-expanded={open}
         aria-controls={listId}
         aria-label={open ? ui.closeCompass : ui.compass}

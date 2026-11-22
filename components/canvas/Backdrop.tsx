@@ -10,7 +10,8 @@ import { palette } from "@/lib/palette";
 import { journey } from "@/lib/scroll";
 
 const grounds = chapters.map((c) => new Color(palette[c.background]));
-const VOID = new Color(palette.ink);
+// The void: ink, a touch colder (navy) — no warmth until the kindling.
+const VOID = new Color(palette.ink).lerp(new Color(palette.navy), 0.12);
 const CATHEDRAL = new Color(palette.lavender);
 
 /** Where in each chapter the blend into the next chapter's ground starts. */

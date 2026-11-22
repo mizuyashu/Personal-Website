@@ -43,10 +43,16 @@ export default function Constellation() {
 
         // Each line draws in its own slice of the draw window (reduced motion: all at once).
         const t = reducedMotion ? (local > DAWN.skyIn ? 1 : 0) : smoothstep(DAWN.drawStart, DAWN.drawEnd, local) * edges.length;
+        // Swift, like reaching flow (docs/vision.md §17): each line holds still for most of its
+        // slice, then whips across in a burst and settles (ease-in, then a clean stop).
         lines.current.forEach((line, i) => {
-          if (line) line.style.strokeDashoffset = String(1 - Math.min(1, Math.max(0, t - i)));
+          if (!line) return;
+          const local = Math.min(1, Math.max(0, t - i));
+          const whip = reducedMotion ? local : Math.min(1, Math.max(0, (local - 0.45) / 0.3)) ** 2.2;
+          line.style.strokeDashoffset = String(1 - whip);
         });
-        setDrawn(Math.floor(t + 1e-6));
+        // A star lights when the line reaching it has finished its whip.
+        setDrawn(Math.min(edges.length, Math.floor(t + 0.25 + 1e-6)));
       }),
     [reducedMotion],
   );

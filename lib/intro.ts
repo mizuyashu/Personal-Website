@@ -12,6 +12,29 @@ export const INTRO = {
   snapTo: 0.62,
 } as const;
 
+/**
+ * Failed kindlings in the void (docs/vision.md §17): the fire tries to catch and dies, each try
+ * a little stronger, before the one that catches becomes the radiance (the flash).
+ * Centre, half-width (intro progress) and strength of each attempt.
+ */
+export const KINDLES = [
+  { at: 0.1, width: 0.035, strength: 0.35 },
+  { at: 0.19, width: 0.035, strength: 0.55 },
+  { at: 0.28, width: 0.035, strength: 0.75 },
+] as const;
+
+/** How hard the fire is trying to catch at journey position `p` (0 = dark, up to ~0.75). */
+export function kindleAmount(p: number) {
+  let amount = 0;
+  for (const k of KINDLES) {
+    // Catches fast, dies slower.
+    const rise = smoothstep(k.at - k.width, k.at, p);
+    const die = 1 - smoothstep(k.at, k.at + k.width * 1.8, p);
+    amount = Math.max(amount, rise * die * k.strength);
+  }
+  return amount;
+}
+
 export function clamp01(x: number) {
   return Math.min(1, Math.max(0, x));
 }
