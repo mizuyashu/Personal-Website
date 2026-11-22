@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
     <>
-      <footer className="bg-gradient-to-r from-solar-dark-green to-earth-green text-white mt-auto">
+      <footer className="bg-linear-to-r from-[#0a2a52] to-[#031d3a] text-white mt-auto">
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
@@ -13,15 +13,15 @@ export default function Footer() {
           <div>
             <h3 className="text-xl font-bold mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              <li><a href="/about" className="hover:text-solar-yellow transition">About me</a></li>
-              <li><a href="/projects" className="hover:text-solar-yellow transition">Projects</a></li>
+              <li><a href="/about" className="hover:text-[#f2c45a] transition">About me</a></li>
+              <li><a href="/projects" className="hover:text-[#f2c45a] transition">Projects</a></li>
             </ul>
           </div>
           <div>
             <h3 className="text-xl font-bold mb-4">Contact</h3>
             <p className="text-gray-300">
               Kingston, ON, Canada<br />
-              <a href="mailto:michael.zhu@queensu.ca" className="hover:text-solar-yellow transition">
+              <a href="mailto:michael.zhu@queensu.ca" className="hover:text-[#f2c45a] transition">
                 michael.zhu@queensu.ca
               </a>
             </p>

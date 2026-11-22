@@ -1,10 +1,12 @@
+import type { ReactNode } from "react";
+
 type Props = {
   label: string;
   title: string;
-  intro?: string;
+  children?: ReactNode;
 };
 
-export default function PageHeader({ label, title, intro }: Props) {
+export default function PageHeader({ label, title, children }: Props) {
   return (
     <section className="bg-[#f5f1ea] px-8 py-24">
       <div className="mx-auto grid max-w-6xl gap-16 md:grid-cols-2">
@@ -19,7 +21,7 @@ export default function PageHeader({ label, title, intro }: Props) {
             {title}
           </h1>
         </div>
-        {intro && <p className="text-2xl font-bold text-[#0a2a52]">{intro}</p>}
+        {children && <div className="space-y-4">{children}</div>}
       </div>
     </section>
   );

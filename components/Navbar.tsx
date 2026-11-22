@@ -8,7 +8,7 @@ const links = [
   { href: '/', label: 'Home' },
   { href: '/about', label: 'About' },
   { href: '/education', label: 'Education' },
-  { href: '/design teams', label: 'Design Teams' },
+  { href: '/design-teams', label: 'Design Teams' },
   { href: '/projects', label: 'Projects' },
 ]
 
@@ -41,11 +41,6 @@ export default function Navbar() {
                 {l.label}
               </Link>
             ))}
-            
-            
-            <Link href="/dashboard" className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded transition text-white shadow-lg font-semibold">
-              Dashboard
-            </Link>
           </div>
 
           {/* Hamburger button */}
@@ -78,13 +73,6 @@ export default function Navbar() {
                 {l.label}
               </Link>
             ))}
-            <Link
-              href="/dashboard"
-              onClick={() => setOpen(false)}
-              className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-center text-white font-semibold shadow-lg"
-            >
-              Dashboard
-            </Link>
           </div>
         )}
        </div>
