@@ -1,6 +1,6 @@
 .chapter {
   position: relative;
-  min-height: 200svh;
+  min-height: calc(var(--chapter-screens, 2) * 100svh);
   padding: 0 1rem;
   color: var(--chapter-fg);
 }
@@ -36,21 +36,4 @@
   letter-spacing: 0.2em;
   text-transform: uppercase;
   opacity: 0.8;
-}
-
-/* Intro: the name mark (M0) inside chapter I. */
-.name {
-  margin: 3rem 0 0;
-  font-family: var(--font-title);
-  font-weight: 600;
-  font-size: clamp(3rem, 12vw, 9rem);
-  letter-spacing: 0.08em;
-  line-height: 1;
-  color: var(--chapter-accent);
-}
-
-.epithet {
-  margin: 1.25rem 0 0;
-  font-style: italic;
-  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
 }

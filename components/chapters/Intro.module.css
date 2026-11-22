@@ -1,0 +1,124 @@
+/* Fixed over the canvas, under the flash and the corner UI. */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  pointer-events: none;
+}
+
+.mark {
+  max-width: 100%;
+  text-align: center;
+  color: var(--ink);
+}
+
+.rule {
+  display: block;
+  width: min(320px, 72vw);
+  height: auto;
+  margin: 0 auto;
+  color: var(--gold);
+  transform-origin: center;
+}
+
+.tier {
+  margin: 1rem 0 0.4rem;
+  padding-left: 0.45em; /* balances the letter spacing */
+  font-family: var(--font-title);
+  font-size: clamp(0.75rem, 1.6vw, 1rem);
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: var(--navy);
+}
+
+.name {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: clamp(3rem, 13vw, 9.5rem);
+  letter-spacing: 0.06em;
+  line-height: 1;
+  color: var(--ink);
+  text-shadow:
+    0 0 28px color-mix(in srgb, var(--gold) 75%, transparent),
+    0 0 6px color-mix(in srgb, var(--gold) 90%, transparent);
+}
+
+/* Narration caption box, crowned with a small gold diamond. */
+.epithet {
+  position: relative;
+  display: inline-block;
+  margin: 1.5rem 0 0;
+  padding: 0.6rem 1.4rem;
+  border: 1px solid var(--ink);
+  background: color-mix(in srgb, var(--ivory) 82%, transparent);
+  font-style: italic;
+  font-size: clamp(1rem, 2.2vw, 1.35rem);
+  color: var(--ink);
+}
+
+.epithet::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--ink);
+  background: var(--gold);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+/* Flash to white (ivory). Opacity is driven by scroll; off with reduced motion. */
+.flash {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  background: var(--ivory);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* "Scroll" cue at the bottom of the first screen, inside the scrolling chapter. */
+.hint {
+  position: absolute;
+  top: calc(100svh - 6rem);
+  left: 50%;
+  transform: translateX(-50%);
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-stem);
+  font-size: 0.7rem;
+  letter-spacing: 0.35em;
+  padding-left: 0.35em;
+  text-transform: uppercase;
+  color: var(--ivory);
+  opacity: 0.75;
+}
+
+.hintLine {
+  width: 1px;
+  height: 2.5rem;
+  background: linear-gradient(var(--gold), transparent);
+  transform-origin: top;
+  animation: hint 2.4s ease-in-out infinite;
+}
+
+@keyframes hint {
+  0% {
+    transform: scaleY(0);
+    opacity: 1;
+  }
+  60% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 0;
+  }
+}

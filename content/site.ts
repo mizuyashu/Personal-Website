@@ -2,6 +2,8 @@
 export const site = {
   // TODO(content): final name-mark words.
   name: "Michael",
+  // TODO(content): the small line above the name (two-tier name mark). "Eminence" is a candidate word.
+  nameTier: "Toward Eminence",
   // TODO(content): final epithet. "an engineer who builds worlds" is a placeholder.
   epithet: "an engineer who builds worlds",
   description:
@@ -18,4 +20,6 @@ export const ui = {
   qualityLite: "Lite",
   compass: "Chapters",
   closeCompass: "Close chapters",
+  scrollHint: "Scroll",
+  loading: "Loading",
 } as const;

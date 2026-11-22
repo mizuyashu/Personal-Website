@@ -10,9 +10,20 @@ export const journey = { position: 0 };
 
 let active = 0;
 const listeners = new Set<() => void>();
+const positionListeners = new Set<(position: number) => void>();
+
+/** Called on every position change (for HTML overlays that follow scroll). Returns an unsubscribe. */
+export function onJourneyPosition(listener: (position: number) => void) {
+  positionListeners.add(listener);
+  listener(journey.position);
+  return () => {
+    positionListeners.delete(listener);
+  };
+}
 
 export function setJourneyPosition(position: number, chapterCount: number) {
   journey.position = position;
+  positionListeners.forEach((listener) => listener(position));
   const next = Math.min(chapterCount - 1, Math.max(0, Math.floor(position)));
   if (next !== active) {
     active = next;

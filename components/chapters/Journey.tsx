@@ -2,12 +2,14 @@
 
 import { useRef, type ReactNode } from "react";
 import { ScrollSmoother, ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { INTRO } from "@/lib/intro";
 import { useReducedMotion } from "@/lib/motion";
 import { setJourneyPosition } from "@/lib/scroll";
 
 // The master scroll timeline. One ScrollTrigger spans the page and turns scroll into
-// the journey position (chapter index + progress), which the canvas reads each frame.
+// the journey position (chapter index + progress), which the canvas and overlays read.
 // Smooth scrolling via ScrollSmoother, except with reduced motion and on touch (native).
+// Snap only in special sequences: the intro flash (never with reduced motion).
 export default function Journey({ children }: { children: ReactNode }) {
   const wrapper = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
@@ -30,17 +32,28 @@ export default function Journey({ children }: { children: ReactNode }) {
         const sections = contentEl.querySelectorAll<HTMLElement>("[data-chapter]");
         bounds = [...Array.from(sections, (s) => s.getBoundingClientRect().top - top), maxScroll];
       };
-      const update = (scroll: number) => {
+      const positionOf = (scroll: number) => {
         const count = bounds.length - 1;
-        if (count < 1) return;
+        if (count < 1) return 0;
         let i = 0;
         while (i < count - 1 && scroll >= bounds[i + 1]) i++;
         const span = bounds[i + 1] - bounds[i];
-        const local = span > 0 ? Math.min(1, Math.max(0, (scroll - bounds[i]) / span)) : 0;
-        setJourneyPosition(i + local, count);
+        return i + (span > 0 ? Math.min(1, Math.max(0, (scroll - bounds[i]) / span)) : 0);
       };
       // Whole pixels, so a jump that lands on a chapter's first pixel counts as that chapter.
       const scrollOf = (self: ScrollTrigger) => Math.round(self.start + self.progress * (self.end - self.start));
+      const update = (self: ScrollTrigger) => setJourneyPosition(positionOf(scrollOf(self)), bounds.length - 1);
+
+      // Resting inside the flash window glides to its near side in the scroll direction.
+      const snapTo = (value: number, self?: ScrollTrigger) => {
+        if (!self || bounds.length < 2) return value;
+        const range = self.end - self.start;
+        const p = positionOf(self.start + value * range);
+        if (p <= INTRO.snapFrom || p >= INTRO.snapTo) return value;
+        const target = self.direction > 0 ? INTRO.snapTo : INTRO.snapFrom;
+        const scroll = bounds[0] + target * (bounds[1] - bounds[0]);
+        return (scroll - self.start) / range;
+      };
 
       ScrollTrigger.create({
         trigger: contentEl,
@@ -48,9 +61,10 @@ export default function Journey({ children }: { children: ReactNode }) {
         end: "max",
         onRefresh: (self) => {
           measure(self.end);
-          update(scrollOf(self));
+          update(self);
         },
-        onUpdate: (self) => update(scrollOf(self)),
+        onUpdate: update,
+        snap: reducedMotion ? undefined : { snapTo, duration: { min: 0.4, max: 1 }, delay: 0.12, ease: "power2.inOut" },
       });
     },
     { dependencies: [reducedMotion], revertOnUpdate: true },
