@@ -84,8 +84,9 @@ export default function Medallion() {
       const target = e.target as HTMLElement | null;
       if (target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
       const atTheGate = !medallion.raised && Math.abs(currentScrollY() - gateY()) < window.innerHeight * 0.6;
-      // Hold Space or Enter at the gate to raise the medallion.
-      if (atTheGate && (e.key === " " || e.key === "Enter") && !(e.target instanceof HTMLButtonElement)) {
+      // Hold Space, M or Enter at the gate to raise the medallion.
+      const raiseKey = e.key === " " || e.key === "Enter" || e.code === "KeyM";
+      if (atTheGate && raiseKey && !(e.target instanceof HTMLButtonElement)) {
         e.preventDefault();
         if (e.type === "keydown" && !e.repeat) startHold();
         if (e.type === "keyup") endHold();
@@ -138,13 +139,13 @@ export default function Medallion() {
         }}
         onPointerCancel={() => endHold()}
         onKeyDown={(e) => {
-          if ((e.key === " " || e.key === "Enter") && !e.repeat) {
+          if ((e.key === " " || e.key === "Enter" || e.code === "KeyM") && !e.repeat) {
             e.preventDefault();
             startHold();
           }
         }}
         onKeyUp={(e) => {
-          if (e.key === " " || e.key === "Enter") endHold();
+          if (e.key === " " || e.key === "Enter" || e.code === "KeyM") endHold();
         }}
       >
         <svg className={styles.ring} viewBox="0 0 100 100" aria-hidden focusable="false">

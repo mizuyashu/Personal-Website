@@ -79,6 +79,11 @@ export default function GameControls() {
   // Keyboard.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      // Space never scrolls the journey (held, it raced to the end); it's the medallion's key.
+      if (event.key === " " && !isTyping(event.target) && !(event.target instanceof HTMLButtonElement) && !(event.target instanceof HTMLAnchorElement)) {
+        event.preventDefault();
+        return;
+      }
       if (roam.active || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || isTyping(event.target)) return;
       const key = event.key.toLowerCase();
       let handled = true;

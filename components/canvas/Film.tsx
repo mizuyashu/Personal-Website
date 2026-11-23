@@ -5,7 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { Bloom, ChromaticAberration, EffectComposer } from "@react-three/postprocessing";
 import { BlendFunction, Effect, type BloomEffect, type ChromaticAberrationEffect } from "postprocessing";
 import { Color, Uniform, Vector2 } from "three";
-import { BONFIRE } from "@/lib/bonfire";
+import { BONFIRE, kindleSwell } from "@/lib/bonfire";
 import { DESCENT } from "@/lib/embers";
 import { INTRO, clamp01, kindleAmount, smoothstep } from "@/lib/intro";
 import { palette } from "@/lib/palette";
@@ -69,10 +69,10 @@ function moodAt(p: number): Mood {
     // The embers: warm leaks, the strongest halftone (the printed, gritty chapter).
     return { bloom: 0.7, fringe: 0.0012, leak: 0.07, halftone: 0.7, grain: 0.38, a: palette.ember, b: palette.gold };
   }
-  // The bonfire: gold leaks; a bloom-and-fringe kick when it ignites.
+  // The bonfire: gold leaks; a gentle bloom swell as it kindles.
   const local = p - 4;
   const ignite = clamp01((local - BONFIRE.igniteStart) / (BONFIRE.igniteEnd - BONFIRE.igniteStart));
-  const pop = Math.sin(Math.PI * clamp01(ignite / 0.6)) * 0.4;
+  const pop = kindleSwell(ignite);
   return { bloom: 0.9 + pop * 3, fringe: 0.001 + pop * 0.006, leak: 0.08 + pop * 0.2, halftone: 0.4, grain: 0.3, a: palette.gold, b: palette.ember };
 }
 

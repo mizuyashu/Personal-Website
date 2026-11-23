@@ -13,6 +13,7 @@ import CameraRig from "./CameraRig";
 import Dust from "./Dust";
 import FilmComposer from "./Film";
 import FlightStreaks from "./FlightStreaks";
+import WarmUp from "./WarmUp";
 import Arches from "./scenes/Arches";
 import Blueprint from "./scenes/Blueprint";
 import Dawn from "./scenes/Dawn";
@@ -62,6 +63,7 @@ export default function World() {
       <Bonfire lite={lite} reducedMotion={reducedMotion} />
       <SubpageSpace reducedMotion={reducedMotion} />
       <FlightStreaks reducedMotion={reducedMotion} />
+      <WarmUp />
       <Dust count={lite ? 600 : 4000} chapterCount={chapters.length} />
       <CameraRig chapterCount={chapters.length} reducedMotion={reducedMotion} />
       {!lite && <FilmComposer reducedMotion={reducedMotion} />}

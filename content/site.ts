@@ -54,6 +54,6 @@ export const controls = {
 // The medallion at the great lift (components/ui/Medallion.tsx).
 export const medallionCopy = {
   label: "Raise the medallion",
-  hintDesktop: "Hold Space, or click and hold",
+  hintDesktop: "Hold Space or M, or click and hold",
   hintTouch: "Hold, or tap again and again",
 } as const;

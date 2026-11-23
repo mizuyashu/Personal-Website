@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { AdditiveBlending, Color, ShaderMaterial, type Group, type Mesh, type PointLight } from "three";
-import { BONFIRE } from "@/lib/bonfire";
+import { BONFIRE, kindleSwell } from "@/lib/bonfire";
 import { clamp01, smoothstep } from "@/lib/intro";
 import { palette } from "@/lib/palette";
 import { chapters } from "@/content/chapters";
@@ -27,8 +27,9 @@ const FLAME_LAYERS = [
   { z: -10, x: 0, scale: [1, 1], opacity: 0.6, seed: 0 },
   { z: -9.4, x: 0.15, scale: [0.6, 0.72], opacity: 0.55, seed: 7.3 },
 ] as const;
-const FLAME_SIZE: [number, number] = [3.4, 5];
-const FLAME_BASE_Y = -3.6;
+// Kept low and modest so it sits under the contact compass, not over it (Michael, 2026-11-23).
+const FLAME_SIZE: [number, number] = [3.1, 4.1];
+const FLAME_BASE_Y = -4.4;
 
 // Chapter V: the bonfire. It ignites as hard as the radiance pop-in: the flame overshoots,
 // a fan of sparks bursts out and the light flares, then it settles into a big, wild fire.
@@ -65,7 +66,7 @@ export default function Bonfire({ lite, reducedMotion }: { lite: boolean; reduce
     const dirs = new Float32Array(burstCount * 3);
     const seeds = new Float32Array(burstCount);
     for (let i = 0; i < burstCount; i++) {
-      positions.set([(random() - 0.5) * 0.6, -1.6 + random() * 0.8, -10 + (random() - 0.5) * 0.6], i * 3);
+      positions.set([(random() - 0.5) * 0.6, FLAME_BASE_Y + 1.4 + random() * 0.8, -10 + (random() - 0.5) * 0.6], i * 3);
       // Mostly upward and outward: a fan, not a full sphere.
       const angle = Math.PI * (0.08 + random() * 0.84);
       const tilt = (random() - 0.5) * 0.8;
@@ -139,8 +140,9 @@ export default function Bonfire({ lite, reducedMotion }: { lite: boolean; reduce
     // Ignition, driven by scroll like the intro flash: 0 → 1 across the start of the chapter.
     const ignite = reducedMotion ? 1 : clamp01((local - BONFIRE.igniteStart) / (BONFIRE.igniteEnd - BONFIRE.igniteStart));
     // Grows fast, overshoots (a brief flare, ~1.4×) and settles back to full size.
-    const grow = smoothstep(0, 0.3, ignite);
-    const pop = reducedMotion ? 0 : Math.sin(Math.PI * clamp01(ignite / 0.6)) * 0.4;
+    // Kindling: grows slowly over the whole ignition, with a gentle swell near the end (no pop).
+    const grow = smoothstep(0, 0.85, ignite);
+    const pop = reducedMotion ? 0 : kindleSwell(ignite);
 
     const time = flameMaterials[0].uniforms.uTime.value + (reducedMotion ? 0 : delta);
     flameMaterials.forEach((m, i) => {
@@ -167,13 +169,13 @@ export default function Bonfire({ lite, reducedMotion }: { lite: boolean; reduce
     }
     if (light.current) {
       const flicker = reducedMotion ? 0 : Math.sin(time * 9) * 3 + Math.sin(time * 23.7) * 1.5;
-      light.current.intensity = presence * grow * (20 + flicker + pop * 40);
+      light.current.intensity = presence * grow * (20 + flicker + pop * 30);
     }
   });
 
   return (
     <group ref={group} visible={false}>
-      <mesh ref={glowMesh} position={[0, -3.4, -12]} scale={[11, 5, 1]}>
+      <mesh ref={glowMesh} position={[0, FLAME_BASE_Y + 0.2, -12]} scale={[11, 5, 1]}>
         <planeGeometry args={[1, 1]} />
         <shaderMaterial ref={glow} vertexShader={planeVert} fragmentShader={glowFrag} uniforms={uniforms.glow} transparent depthWrite={false} blending={AdditiveBlending} fog={false} />
       </mesh>
@@ -205,7 +207,7 @@ export default function Bonfire({ lite, reducedMotion }: { lite: boolean; reduce
         </bufferGeometry>
         <shaderMaterial ref={burst} vertexShader={burstVert} fragmentShader={embersFrag} uniforms={uniforms.burst} transparent depthWrite={false} blending={AdditiveBlending} />
       </points>
-      <pointLight ref={light} position={[0, -1, -9]} color={palette.gold} intensity={0} distance={24} decay={1.5} />
+      <pointLight ref={light} position={[0, FLAME_BASE_Y + 2, -9]} color={palette.gold} intensity={0} distance={24} decay={1.5} />
     </group>
   );
 }

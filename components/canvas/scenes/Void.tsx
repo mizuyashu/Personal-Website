@@ -43,7 +43,7 @@ const GOLD = new Color(palette.gold);
 const IVORY = new Color(palette.ivory);
 
 /** Broken constellations: a few groups of dying stars joined by lines, plus loose stars. */
-function buildSky(fieldCount: number) {
+function buildSky(dyingCount: number, glintCount: number) {
   const random = seededRandom(1733);
   const stars: { x: number; y: number; z: number; seed: number; scale: number; life: number }[] = [];
   const lines: number[] = [];
@@ -57,13 +57,14 @@ function buildSky(fieldCount: number) {
   };
 
   const groups = [
-    [-22, 9], [-9, 13], [7, 5], [21, 8], [-27, -2], [26, -3], [-14, 3], [15, 2],
+    // Few, and far apart: broken stars, not a crowded sky (Michael, 2026-11-23). Index 1 holds your socket.
+    [-22, 9], [7, 5], [24, -1], [-17, -4],
   ];
   let socket = { x: 0, y: 0, z: 0 };
   let socketFrom = { x: 0, y: 0, z: 0 };
   groups.forEach(([gx, gy], g) => {
     const z = SKY_Z[0] + (SKY_Z[1] - SKY_Z[0]) * random();
-    const count = 4 + Math.floor(random() * 4);
+    const count = 3 + Math.floor(random() * 2);
     let x = gx;
     let y = gy;
     const members: (typeof stars)[number][] = [];
@@ -77,7 +78,7 @@ function buildSky(fieldCount: number) {
     // A branch, so they read as figures rather than chains.
     if (count > 4) link(members[1], members[count - 1]);
     // The group nearest the top centre has an empty socket at its end: yours.
-    if (g === 2) {
+    if (g === 1) {
       const last = members[members.length - 1];
       // Keep the socket in a clear patch of sky at the upper right (in frame, off the sun's disc).
       const d = -last.z;
@@ -91,15 +92,25 @@ function buildSky(fieldCount: number) {
     }
     stars.push(...members);
   });
-  // Loose stars: most dead rings, a few cold glints of distant starlight.
-  for (let i = 0; i < fieldCount; i++) {
+  // Loose stars: a few dying rings, and many of the tiniest points of cold, distant starlight.
+  for (let i = 0; i < dyingCount; i++) {
     stars.push({
       x: (random() - 0.5) * 70,
       y: (random() - 0.5) * 38,
       z: SKY_Z[0] + (SKY_Z[1] - SKY_Z[0]) * random(),
       seed: random(),
-      scale: random() < 0.3 ? 0.8 + random() : 0.9 + random() * 1.6,
-      life: random() < 0.3 ? 0.9 + random() * 0.1 : random() * 0.5,
+      scale: 0.9 + random() * 1.1,
+      life: random() * 0.5,
+    });
+  }
+  for (let i = 0; i < glintCount; i++) {
+    stars.push({
+      x: (random() - 0.5) * 80,
+      y: (random() - 0.5) * 44,
+      z: SKY_Z[0] + (SKY_Z[1] - SKY_Z[0]) * random(),
+      seed: random(),
+      scale: 0.45 + random() * 0.5,
+      life: 0.9 + random() * 0.1,
     });
   }
 
@@ -159,8 +170,8 @@ export default function Void({ lite, reducedMotion }: Props) {
   const ash = useRef<ShaderMaterial>(null);
   const risers = useRef<ShaderMaterial>(null);
 
-  const sky = useMemo(() => buildSky(lite ? 60 : 150), [lite]);
-  const ashField = useMemo(() => buildAsh(lite ? 260 : 700), [lite]);
+  const sky = useMemo(() => (lite ? buildSky(10, 110) : buildSky(22, 260)), [lite]);
+  const ashField = useMemo(() => buildAsh(lite ? 200 : 420), [lite]);
   const riserField = useMemo(() => buildRisers(lite ? 18 : 40), [lite]);
 
   const uniforms = useMemo(() => {
@@ -261,8 +272,8 @@ export default function Void({ lite, reducedMotion }: Props) {
   return (
     <group ref={group}>
       <group ref={drift}>
-        {/* Dead planets and drifting ruins, seen only by their rims */}
-        <VoidRelics lite={lite} reducedMotion={reducedMotion} />
+        {/* Dead planets, seen only by their rims */}
+        <VoidRelics reducedMotion={reducedMotion} />
         {/* The sky of dying stars and their broken constellations */}
         <points key={`stars-${lite}`} frustumCulled={false}>
           <bufferGeometry>

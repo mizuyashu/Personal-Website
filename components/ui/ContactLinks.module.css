@@ -5,6 +5,17 @@
   margin: 0 auto;
 }
 
+/* A soft dark halo behind the compass, so the links stay readable when the fire is behind them. */
+.compass::before {
+  content: "";
+  position: absolute;
+  inset: -14%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--navy) 72%, transparent) 40%, transparent 100%);
+  pointer-events: none;
+}
+
 .star {
   position: absolute;
   inset: 30%;

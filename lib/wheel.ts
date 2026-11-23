@@ -78,9 +78,24 @@ export function installWheelGovernor() {
     }
   };
 
+  // Page Up / Page Down go through the same speed limit (a screen each), instead of jumping.
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key !== "PageDown" && e.key !== "PageUp") return;
+    if (roam.active || e.altKey || e.ctrlKey || e.metaKey || ownsScroll(e.target)) return;
+    e.preventDefault();
+    const cap = MAX_QUEUED_SCREENS * window.innerHeight;
+    queued = Math.max(-cap, Math.min(cap, queued + (e.key === "PageDown" ? 1 : -1) * window.innerHeight * 0.9));
+    if (!frame) {
+      last = performance.now();
+      frame = requestAnimationFrame(step);
+    }
+  };
+
   window.addEventListener("wheel", onWheel, { passive: false });
+  window.addEventListener("keydown", onKey);
   return () => {
     window.removeEventListener("wheel", onWheel);
+    window.removeEventListener("keydown", onKey);
     cancelAnimationFrame(frame);
   };
 }
