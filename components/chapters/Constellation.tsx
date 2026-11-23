@@ -7,6 +7,7 @@ import { smoothstep } from "@/lib/intro";
 import { useReducedMotion } from "@/lib/motion";
 import { onJourneyPosition } from "@/lib/scroll";
 import StatusWindow from "@/components/ui/StatusWindow";
+import { earnStar } from "@/lib/ownStar";
 import styles from "./Constellation.module.css";
 
 const CHAPTER = 2;
@@ -52,7 +53,10 @@ export default function Constellation() {
           line.style.strokeDashoffset = String(1 - whip);
         });
         // A star lights when the line reaching it has finished its whip.
-        setDrawn(Math.min(edges.length, Math.floor(t + 0.25 + 1e-6)));
+        const count = Math.min(edges.length, Math.floor(t + 0.25 + 1e-6));
+        setDrawn(count);
+        // The whole constellation drawn: it's yours. Your star in the void's sky is earned.
+        if (count >= edges.length) earnStar(1);
       }),
     [reducedMotion],
   );
@@ -61,6 +65,7 @@ export default function Constellation() {
   // Only the latest unlock shows, and only for stars marked `unlock` (about 5), so the windows
   // don't stack up. Keyed by star, so each star's window appears once per pass.
   const newest = UNLOCK_ORDER.filter((i) => lit.has(i) && skills[i].unlock).slice(-1);
+  const complete = drawn >= edges.length;
 
   return (
     <div ref={root} className={styles.overlay} aria-label={education.constellationLabel}>
@@ -89,9 +94,11 @@ export default function Constellation() {
         ))}
       </svg>
       <div className={styles.status}>
-        {newest.map((i) => (
-          <StatusWindow key={i} label={education.unlocked} text={skills[i].name} />
-        ))}
+        {complete ? (
+          <StatusWindow key="own" label={education.ownStar.label} text={education.ownStar.text} />
+        ) : (
+          newest.map((i) => <StatusWindow key={i} label={education.unlocked} text={skills[i].name} />)
+        )}
       </div>
     </div>
   );

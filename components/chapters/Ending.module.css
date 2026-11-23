@@ -50,6 +50,22 @@
 
 .star {
   fill: var(--ivory);
+  filter: drop-shadow(0 0 3px var(--gold));
+}
+
+.starGroup {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* The gleam that runs up the blade as it is raised: a short bright dash travelling tip-ward. */
+.gleam {
+  stroke: var(--ivory);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 0.18 1;
+  stroke-dashoffset: 1;
+  filter: drop-shadow(0 0 6px var(--ivory));
 }
 
 .flash {
@@ -95,4 +111,58 @@
   background: var(--gold);
   color: var(--ink);
   outline: none;
+}
+
+/* End-of-journey controls prompt: desktop only (a fine pointer), quiet, under Begin again. */
+.controls {
+  display: none;
+  justify-items: center;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+@media (pointer: fine) {
+  .controls {
+    display: grid;
+  }
+}
+
+.controlsTitle {
+  margin: 0;
+  font-family: var(--font-stem);
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--navy) 70%, transparent);
+}
+
+.controlsList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-stem);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--navy);
+}
+
+.controlsList li {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.controlsList kbd {
+  min-width: 1.4rem;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid color-mix(in srgb, var(--navy) 45%, transparent);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  font-family: var(--font-stem);
+  text-align: center;
 }

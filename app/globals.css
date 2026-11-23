@@ -63,3 +63,18 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* While a sub-page is open (lib/view.ts sets body[data-subpage]), the journey's own HTML fades
+   out so the sub-page's 3D space and text have the screen; it returns once the camera lands. */
+[data-journey] {
+  transition: opacity 0.5s ease;
+}
+
+body[data-subpage] [data-journey] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.35s ease,
+    visibility 0s linear 0.35s;
+}

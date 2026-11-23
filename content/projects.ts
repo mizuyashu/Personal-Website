@@ -25,6 +25,18 @@ export type Project = {
 export const projectsCopy = {
   intro: "TODO(content): one line introducing the projects.",
   pickCard: "Choose a card",
+  /** The deck (Balatro feeling, docs/vision.md §19): at most 3 cards drawn at once. */
+  deckLabel: "Project deck",
+  deckPile: "Draw a card",
+  deckHint: "Draw a card: keep scrolling, click the deck, or pick a number. All cards: press D.",
+  /** The deck's full menu (components/ui/DeckMenu.tsx). */
+  deckMenu: "All cards",
+  deckMenuTitle: "The deck",
+  deckMenuClose: "Close",
+  deckMenuAll: "All",
+  deckMenuHint: "Arrows to move · Enter to draw · Esc to close",
+  deckOpen: "Open",
+  deckNumbers: "Cards",
   specTitle: "Spec sheet",
   outcomeLabel: "Outcome",
   formatLabels: { device: "Device frame", exploded: "Exploded view" },

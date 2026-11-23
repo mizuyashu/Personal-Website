@@ -6,6 +6,7 @@ import { AdditiveBlending, Color, ShaderMaterial, type Group, type Mesh, type Po
 import { BONFIRE } from "@/lib/bonfire";
 import { clamp01, smoothstep } from "@/lib/intro";
 import { palette } from "@/lib/palette";
+import { chapters } from "@/content/chapters";
 import { journey } from "@/lib/scroll";
 import planeVert from "@/shaders/plane.vert.glsl";
 import flameFrag from "@/shaders/flame.frag.glsl";
@@ -13,7 +14,7 @@ import glowFrag from "@/shaders/glow.frag.glsl";
 import embersVert from "@/shaders/embers.vert.glsl";
 import embersFrag from "@/shaders/embers.frag.glsl";
 import burstVert from "@/shaders/burst.vert.glsl";
-import { seededRandom } from "../layout";
+import { seededRandom, basePath } from "../layout";
 
 const CHAPTER = 4;
 
@@ -131,7 +132,9 @@ export default function Bonfire({ lite, reducedMotion }: { lite: boolean; reduce
     const presence = smoothstep(-0.1, 0.06, local) * (1 - smoothstep(BONFIRE.flashStart, BONFIRE.flashPeak, local));
     group.current.visible = presence > 0;
     if (!group.current.visible) return;
-    group.current.position.set(0, state.camera.position.y, state.camera.position.z);
+    // Follow the base path, not the camera: the camera's side moves then show parallax.
+    const base = basePath(journey.position, chapters.length);
+    group.current.position.set(0, base.y, base.z);
 
     // Ignition, driven by scroll like the intro flash: 0 → 1 across the start of the chapter.
     const ignite = reducedMotion ? 1 : clamp01((local - BONFIRE.igniteStart) / (BONFIRE.igniteEnd - BONFIRE.igniteStart));

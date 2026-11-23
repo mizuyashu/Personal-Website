@@ -15,18 +15,26 @@ type Props = {
   emblem: ReactNode;
   /** Element id to scroll to when the card is chosen. */
   target: string;
+  /** Overrides the default (scroll to `target`), e.g. when the card sits in the deck. */
+  onClick?: () => void;
+  /** Selected in the deck (raised, in full colour). */
+  selected?: boolean;
+  tabIndex?: number;
 };
 
 // Tarot project card (vision §7): number in a hex badge, own frame colour, shared ornate frame.
 // Hovering one lifts it into colour while the others go grey.
-export default function TarotCard({ numeral, title, tagline, status, frame, emblem, target }: Props) {
+export default function TarotCard({ numeral, title, tagline, status, frame, emblem, target, onClick, selected, tabIndex }: Props) {
   const reducedMotion = useReducedMotion();
   return (
     <button
       type="button"
       className={styles.card}
       style={{ "--card-frame": cssVar(frame) } as CSSProperties}
-      onClick={() => scrollToId(target, reducedMotion, 72)}
+      data-selected={selected}
+      aria-pressed={selected}
+      tabIndex={tabIndex}
+      onClick={onClick ?? (() => scrollToId(target, reducedMotion, 72))}
     >
       <svg className={styles.frame} viewBox="0 0 140 240" aria-hidden focusable="false" preserveAspectRatio="none">
         <rect x="4" y="4" width="132" height="232" rx="3" fill="none" stroke="currentColor" strokeWidth="1.5" />

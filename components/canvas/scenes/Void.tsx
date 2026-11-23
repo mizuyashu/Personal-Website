@@ -17,6 +17,8 @@ import planeVert from "@/shaders/plane.vert.glsl";
 import eclipseFrag from "@/shaders/eclipse.frag.glsl";
 import glowFrag from "@/shaders/glow.frag.glsl";
 import { seededRandom } from "../layout";
+import OwnStar from "./OwnStar";
+import VoidRelics from "./VoidRelics";
 
 type Props = { lite: boolean; reducedMotion: boolean };
 
@@ -55,9 +57,10 @@ function buildSky(fieldCount: number) {
   };
 
   const groups = [
-    [-22, 9], [-9, 13], [7, 11], [21, 8], [-27, -2], [26, -3], [-14, 3], [15, 2],
+    [-22, 9], [-9, 13], [7, 5], [21, 8], [-27, -2], [26, -3], [-14, 3], [15, 2],
   ];
   let socket = { x: 0, y: 0, z: 0 };
+  let socketFrom = { x: 0, y: 0, z: 0 };
   groups.forEach(([gx, gy], g) => {
     const z = SKY_Z[0] + (SKY_Z[1] - SKY_Z[0]) * random();
     const count = 4 + Math.floor(random() * 4);
@@ -76,7 +79,14 @@ function buildSky(fieldCount: number) {
     // The group nearest the top centre has an empty socket at its end: yours.
     if (g === 2) {
       const last = members[members.length - 1];
-      socket = { x: last.x + 4.5, y: last.y + 2.5, z: last.z };
+      // Keep the socket in a clear patch of sky at the upper right (in frame, off the sun's disc).
+      const d = -last.z;
+      socket = {
+        x: Math.min(0.6 * d, Math.max(0.3 * d, last.x + 4.5)),
+        y: Math.min(0.3 * d, Math.max(0.14 * d, last.y + 2.5)),
+        z: last.z,
+      };
+      socketFrom = { x: last.x, y: last.y, z: last.z };
       link(last, { ...socket, seed: 0, scale: 0, life: 0 });
     }
     stars.push(...members);
@@ -102,6 +112,7 @@ function buildSky(fieldCount: number) {
     lineSeeds: new Float32Array(lineSeeds),
     along: new Float32Array(along),
     socket,
+    socketFrom,
   };
 }
 
@@ -250,6 +261,8 @@ export default function Void({ lite, reducedMotion }: Props) {
   return (
     <group ref={group}>
       <group ref={drift}>
+        {/* Dead planets and drifting ruins, seen only by their rims */}
+        <VoidRelics lite={lite} reducedMotion={reducedMotion} />
         {/* The sky of dying stars and their broken constellations */}
         <points key={`stars-${lite}`} frustumCulled={false}>
           <bufferGeometry>
@@ -273,6 +286,9 @@ export default function Void({ lite, reducedMotion }: Props) {
           <ringGeometry args={[0.55, 0.62, 48]} />
           <meshBasicMaterial color={palette.rose} transparent opacity={0.28} depthWrite={false} fog={false} />
         </mesh>
+        {/* Your star, once earned (lib/ownStar.ts): cold starlight after chapter III, gold and
+            joined to its constellation after the ending. */}
+        <OwnStar socket={sky.socket} from={sky.socketFrom} reducedMotion={reducedMotion} />
 
         {/* Falling ash, and the few embers that still rise */}
         <points key={`ash-${lite}`} frustumCulled={false}>

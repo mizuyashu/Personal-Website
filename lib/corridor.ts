@@ -2,24 +2,26 @@ import { projects } from "@/content/projects";
 import { clamp01 } from "@/lib/intro";
 
 // Beats of chapter II, as progress through the Projects chapter (0–1). The chapter is
-// PROJECTS_SCREENS long: hold at the entry (read II) → walk the nave on a diagonal → tilt up at the crossing → the lift: a slow,
+// PROJECTS_SCREENS long: round the corner into the nave → hold (read II) → walk the nave → tilt up at the crossing → the lift: a slow,
 // heavy creep, then it surges up the lantern tower toward the skylight → arrive: blinding light
 // that turns into the blueprint → hold while the projects scroll past → rise through the
 // skylight into the open sky (chapter III).
 export const PROJECTS_SCREENS = 10;
 
 export const CORRIDOR = {
-  /** Standing at the entry, back left, reading the numeral II before the walk. */
-  entryHold: 0.06,
-  walkEnd: 0.22,
-  /** Standing on the lift, looking up the tower. The lift starts to move. */
-  tiltEnd: 0.27,
+  /** Along the narthex and round the corner (to the left) into the nave. */
+  cornerEnd: 0.095,
+  /** Standing at the head of the nave, reading the numeral II before the walk. */
+  entryHold: 0.13,
+  walkEnd: 0.26,
+  /** Standing on the lift, looking up the tower. The medallion; then the lift starts. */
+  tiltEnd: 0.295,
   /** End of the slow creep; the lift surges from here. */
-  liftSurge: 0.31,
+  liftSurge: 0.335,
   /** The lift reaches the top: the skylight fills the view and turns into the blueprint. */
-  arrive: 0.45,
-  riseEnd: 0.475,
-  exitStart: 0.925,
+  arrive: 0.47,
+  riseEnd: 0.495,
+  exitStart: 0.93,
 } as const;
 
 /** Screens of the blueprint hold, where the projects HTML lives. */

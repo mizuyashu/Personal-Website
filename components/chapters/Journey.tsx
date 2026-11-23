@@ -4,7 +4,9 @@ import { useRef, type ReactNode } from "react";
 import { gsap, ScrollSmoother, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { INTRO } from "@/lib/intro";
 import { useReducedMotion } from "@/lib/motion";
-import { journey, setJourneyPosition } from "@/lib/scroll";
+import { journey, scrollToId, setJourneyPosition } from "@/lib/scroll";
+import { installWheelGovernor } from "@/lib/wheel";
+import { whenLoaderDone } from "@/lib/loading";
 
 // The master scroll timeline. One ScrollTrigger spans the page and turns scroll into
 // the journey position (chapter index + progress), which the canvas and overlays read.
@@ -82,7 +84,25 @@ export default function Journey({ children }: { children: ReactNode }) {
           settle.restart(true);
         },
       });
-      return () => settle.kill();
+      // Back from a sub-page that was loaded directly (no journey behind it): land where it
+      // belongs on the journey (?from=<element id>), never at the top. Then tidy the URL.
+      const from = new URLSearchParams(window.location.search).get("from");
+      if (from && document.getElementById(from)) {
+        // After the loader (it locks scrolling while it shows), with fresh measurements.
+        whenLoaderDone().then(() => {
+          ScrollTrigger.refresh();
+          scrollToId(from, true, 72);
+        });
+        const url = new URL(window.location.href);
+        url.searchParams.delete("from");
+        window.history.replaceState(null, "", url.pathname + url.search + url.hash);
+      }
+      // Mouse-wheel scrolling at most about arrow-key speed (lib/wheel.ts); not with reduced motion.
+      const removeWheelGovernor = reducedMotion ? undefined : installWheelGovernor();
+      return () => {
+        settle.kill();
+        removeWheelGovernor?.();
+      };
     },
     { dependencies: [reducedMotion], revertOnUpdate: true },
   );

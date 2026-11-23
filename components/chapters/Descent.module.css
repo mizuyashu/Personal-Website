@@ -57,7 +57,11 @@
 .white {
   z-index: 3;
   opacity: 0;
-  background: var(--ivory);
+  background:
+    radial-gradient(45% 40% at 8% 90%, color-mix(in srgb, var(--rose) 55%, transparent), transparent 70%),
+    radial-gradient(40% 45% at 94% 10%, color-mix(in srgb, var(--gold) 60%, transparent), transparent 70%),
+    radial-gradient(60% 30% at 50% 50%, color-mix(in srgb, var(--sky) 18%, transparent), transparent 80%),
+    var(--ivory);
 }
 
 /* Letterbox: bars close to ~2.39:1 (capped on tall screens). */

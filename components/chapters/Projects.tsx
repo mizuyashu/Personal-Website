@@ -1,18 +1,11 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties } from "react";
 import type { Chapter } from "@/content/chapters";
 import { projects, projectsCopy, type Project } from "@/content/projects";
 import { BLUEPRINT_ROWS, BLUEPRINT_SCREENS, CORRIDOR, PROJECTS_SCREENS } from "@/lib/corridor";
 import HudWindow from "@/components/ui/HudWindow";
-import TarotCard from "@/components/ui/TarotCard";
-import WebsiteProject, { WebsiteEmblem } from "@/components/projects/website/WebsiteProject";
-import SummerBuild, { SummerBuildEmblem } from "@/components/projects/summer-build/SummerBuild";
+import Deck from "@/components/ui/Deck";
+import { presentations } from "@/components/projects/presentations";
 import styles from "./Projects.module.css";
-
-// Each project owns its presentation (components/projects/<id>/).
-const presentations: Record<string, { body: ReactNode; emblem: ReactNode }> = {
-  website: { body: <WebsiteProject />, emblem: <WebsiteEmblem /> },
-  "summer-build": { body: <SummerBuild />, emblem: <SummerBuildEmblem /> },
-};
 
 // Chapter II's HTML. The first part of the chapter is the 3D corridor (nothing to read);
 // the projects scroll past while the camera holds on the blueprint.
@@ -38,20 +31,7 @@ export default function Projects({ chapter }: { chapter: Chapter }) {
 
         <div className={styles.index}>
           <p className={styles.pick}>{projectsCopy.pickCard}</p>
-          <div className={styles.cards}>
-            {projects.map((p) => (
-              <TarotCard
-                key={p.id}
-                numeral={p.numeral}
-                title={p.title}
-                tagline={p.tagline}
-                status={p.status}
-                frame={p.frame}
-                emblem={presentations[p.id]?.emblem}
-                target={`project-${p.id}`}
-              />
-            ))}
-          </div>
+          <Deck projects={projects} emblems={Object.fromEntries(projects.map((p) => [p.id, presentations[p.id]?.emblem]))} />
         </div>
 
         {projects.map((p) => (

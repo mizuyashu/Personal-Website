@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import Link from "next/link";
 import type { Chapter } from "@/content/chapters";
 import { education } from "@/content/education";
 import { DAWN, EDUCATION_SCREENS } from "@/lib/dawn";
@@ -27,13 +28,17 @@ export default function Education({ chapter }: { chapter: Chapter }) {
         <p className={styles.intro}>{education.intro}</p>
       </header>
       <div aria-hidden />
-      <section className={styles.record} aria-label={education.recordTitle}>
+      <section id="education-record" className={styles.record} aria-label={education.recordTitle}>
         <h3 className={styles.recordTitle}>{education.recordTitle}</h3>
         <ol className={styles.timeline}>
           {education.timeline.map((item) => (
-            <li key={item.when}>
+            <li key={item.id}>
               <span className={styles.when}>{item.when}</span>
               <span>{item.what}</span>
+              {/* Each year opens its own page (docs/vision.md §18), over the journey. */}
+              <Link href={`/education/${item.id}`} scroll={false} className={styles.open}>
+                {education.yearPage.open} <span aria-hidden>→</span>
+              </Link>
             </li>
           ))}
         </ol>

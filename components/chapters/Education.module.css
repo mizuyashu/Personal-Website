@@ -90,7 +90,8 @@
 
 .timeline li {
   display: grid;
-  grid-template-columns: 5.5rem 1fr;
+  grid-template-columns: 5.5rem 1fr auto;
+  align-items: baseline;
   gap: 1rem;
 }
 
@@ -102,4 +103,22 @@
 .awards li::before {
   content: "✦ ";
   color: var(--gold);
+}
+
+/* Open a year's own page. */
+.open {
+  margin-left: auto;
+  font-family: var(--font-stem);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cobalt);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--cobalt) 40%, transparent);
+}
+
+.open:hover,
+.open:focus-visible {
+  border-bottom-color: var(--cobalt);
+  outline: none;
 }

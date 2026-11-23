@@ -1,0 +1,71 @@
+/* Temporary FPS readout, top centre (remove before launch). */
+.meter {
+  position: fixed;
+  z-index: 20;
+  top: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  padding: 0.3rem 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--ink) 78%, transparent);
+  color: var(--ivory);
+  font-family: var(--font-stem);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+}
+
+.fps {
+  min-width: 2ch;
+  text-align: right;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.fps[data-level="good"] {
+  color: var(--teal);
+}
+
+.fps[data-level="ok"] {
+  color: var(--gold);
+}
+
+.fps[data-level="bad"] {
+  color: var(--ember);
+}
+
+.unit,
+.sep,
+.hint {
+  color: color-mix(in srgb, var(--ivory) 55%, transparent);
+}
+
+.detail {
+  color: color-mix(in srgb, var(--ivory) 85%, transparent);
+}
+
+.hint {
+  margin-left: 0.3rem;
+  padding: 0 0.25rem;
+  border: 1px solid color-mix(in srgb, var(--ivory) 35%, transparent);
+  border-radius: 2px;
+}
+
+/* Phones: top left, so it doesn't cover the Menu button. */
+@media (max-width: 600px) {
+  .meter {
+    left: 0.5rem;
+    transform: none;
+    font-size: 0.55rem;
+  }
+
+  .fps {
+    font-size: 0.7rem;
+  }
+}

@@ -1,0 +1,179 @@
+/* A sub-page over the 3D space: clean text on the left, the huge object on the right (canvas). */
+.page {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+}
+
+.panel {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: min(36rem, 100%);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: clamp(1.25rem, 4vw, 3rem);
+  pointer-events: auto;
+  color: var(--navy);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--ivory) 94%, transparent) 70%, transparent);
+}
+
+.page[data-kind="year"] .panel {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--ivory) 88%, transparent) 70%, transparent);
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--cobalt) 45%, transparent);
+  background: var(--ivory);
+  color: var(--cobalt);
+  font-family: var(--font-stem);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.back kbd {
+  padding: 0 0.3rem;
+  border: 1px solid color-mix(in srgb, var(--cobalt) 40%, transparent);
+  border-radius: 2px;
+  font-family: var(--font-stem);
+  opacity: 0.75;
+}
+
+.back:hover,
+.back:focus-visible {
+  background: var(--cobalt);
+  color: var(--ivory);
+  outline: none;
+}
+
+.content {
+  display: grid;
+  gap: 0.9rem;
+  justify-items: start;
+}
+
+.numeral {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+  letter-spacing: 0.1em;
+  color: var(--frame, var(--cobalt));
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1.05;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+
+.tagline,
+.label {
+  margin: 0;
+  font-family: var(--font-stem);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cobalt);
+}
+
+.status {
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--frame, var(--cobalt));
+  font-family: var(--font-stem);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--frame, var(--cobalt));
+}
+
+.summary {
+  margin: 0.4rem 0 0;
+  font-size: 1.2rem;
+  line-height: 1.5;
+}
+
+.presentation {
+  width: 100%;
+}
+
+.specs {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.specs > div {
+  display: grid;
+  grid-template-columns: 9rem 1fr;
+  gap: 0.5rem;
+}
+
+.specs dt {
+  font-family: var(--font-stem);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cobalt);
+}
+
+.specs dd {
+  margin: 0;
+}
+
+.outcome {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0.6rem 0 0;
+}
+
+.outcomeValue {
+  font-family: var(--font-title);
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  color: var(--cobalt);
+}
+
+.list {
+  margin: 0;
+  padding-left: 1.1rem;
+  line-height: 1.7;
+}
+
+.link {
+  color: var(--cobalt);
+  font-family: var(--font-stem);
+  letter-spacing: 0.12em;
+}
+
+/* Portrait: the object floats above; the text panel takes the lower part of the screen. */
+@media (max-aspect-ratio: 1/1) {
+  .panel {
+    inset: 38% 0 0 0;
+    width: 100%;
+    background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--ivory) 94%, transparent) 10%);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .page:not([data-instant="true"]) .panel {
+    animation: arrive 0.7s cubic-bezier(0.2, 0.9, 0.25, 1) 0.9s both;
+  }
+}
+
+@keyframes arrive {
+  from {
+    opacity: 0;
+    transform: translateX(-2rem);
+  }
+}

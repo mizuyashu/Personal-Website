@@ -23,11 +23,20 @@ export const ui = {
   scrollHint: "Scroll",
   loading: "Loading",
   beginAgain: "Begin again",
+  /** Free roam (components/ui/RoamHud.tsx): the corner menu's Explore switch and the HUD. */
+  explore: "Explore",
+  guided: "Guided",
+  freeRoam: "Free roam",
+  roamHint: "W S walk · A D turn · Q E step · drag to look",
+  roamHintTouch: "Use the pad to walk · drag to look",
+  roamExit: "Return to the journey",
 } as const;
 
 // Video-game controls (components/ui/GameControls.tsx): the prompt card's rows.
 export const controls = {
   title: "Controls",
+  /** Shown under "Begin again" at the end of the journey (desktop). */
+  endTitle: "Explore again with the controls",
   keyboard: [
     { keys: ["W", "S"], action: "Move" },
     { keys: ["Q", "E"], action: "Chapter" },
@@ -40,4 +49,11 @@ export const controls = {
     { keys: ["L-stick"], action: "Glide" },
     { keys: ["Start"], action: "Chapters" },
   ],
+} as const;
+
+// The medallion at the great lift (components/ui/Medallion.tsx).
+export const medallionCopy = {
+  label: "Raise the medallion",
+  hintDesktop: "Hold Space, or click and hold",
+  hintTouch: "Hold, or tap again and again",
 } as const;

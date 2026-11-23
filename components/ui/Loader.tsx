@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { ui } from "@/content/site";
 import { gsap, useGSAP } from "@/lib/gsap";
-import { whenWorldReady } from "@/lib/loading";
+import { markLoaderDone, whenWorldReady } from "@/lib/loading";
 import { useReducedMotion } from "@/lib/motion";
 import CompassStar from "./CompassStar";
 import styles from "./Loader.module.css";
@@ -40,6 +40,7 @@ export default function Loader() {
             onComplete: () => {
               html.style.overflow = "";
               setDone(true);
+              markLoaderDone();
             },
           })
           .to(counter, { value: 100, duration: reducedMotion ? 0 : 0.5, ease: "power2.out", onUpdate: render })

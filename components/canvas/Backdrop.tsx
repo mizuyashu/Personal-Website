@@ -8,6 +8,7 @@ import { CORRIDOR } from "@/lib/corridor";
 import { INTRO, smoothstep } from "@/lib/intro";
 import { palette } from "@/lib/palette";
 import { journey } from "@/lib/scroll";
+import { view } from "@/lib/view";
 
 const grounds = chapters.map((c) => new Color(palette[c.background]));
 // The void: ink, a touch colder (navy) — no warmth until the kindling.
@@ -18,6 +19,8 @@ const CATHEDRAL = new Color(palette.lavender);
 const BLEND_START = [INTRO.fadeOutStart, CORRIDOR.exitStart, 0.92, 0.9, 0.75];
 
 const scratch = new Color();
+/** The sub-page space's ground: the blueprint's ivory for projects, the dawn sky for years. */
+const SPACE_GROUND = { project: new Color(palette.ivory), year: new Color(palette.sky).lerp(new Color(palette.ivory), 0.35) };
 
 /** Ground colour inside one chapter, before blending to the next. */
 function groundIn(chapter: number, local: number, out: Color) {
@@ -51,6 +54,15 @@ export default function Backdrop() {
       const haze = chapter === 1 ? 1 - smoothstep(CORRIDOR.liftSurge, CORRIDOR.riseEnd, local) : 0;
       fog.current.near = 6 - haze * 3;
       fog.current.far = 30 - haze * 8;
+    }
+    // A sub-page is open (or the camera is flying there): blend into its space; open the fog.
+    if (view.t > 0 && view.current) {
+      background.current.lerp(SPACE_GROUND[view.current.kind], view.t);
+      if (fog.current) {
+        fog.current.color.copy(background.current);
+        fog.current.near += (40 - fog.current.near) * view.t;
+        fog.current.far += (260 - fog.current.far) * view.t;
+      }
     }
   });
 

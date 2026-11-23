@@ -5,6 +5,8 @@ import { chapters } from "@/content/chapters";
 import { controls } from "@/content/site";
 import { ScrollSmoother } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/motion";
+import { blockedByGate, endHold, gateY, interruptRide, medallion, startHold } from "@/lib/medallion";
+import { roam } from "@/lib/roam";
 import { journey, scrollToChapter } from "@/lib/scroll";
 import styles from "./GameControls.module.css";
 
@@ -33,7 +35,15 @@ function scrollToY(y: number, smooth: boolean) {
 }
 
 function step(direction: 1 | -1, reducedMotion: boolean) {
-  scrollToY(currentScroll() + direction * STEP * window.innerHeight, !reducedMotion);
+  interruptRide();
+  const target = currentScroll() + direction * STEP * window.innerHeight;
+  // The lift waits for the medallion: stepping down stops at the gate.
+  scrollToY(direction > 0 && blockedByGate(target) ? gateY() : target, !reducedMotion);
+}
+
+/** At the waiting lift, the "forward" buttons raise the medallion instead (hold). */
+function atGate() {
+  return !medallion.raised && Math.abs(currentScroll() - gateY()) < window.innerHeight * 0.6;
 }
 
 /** Next/previous chapter. Back first returns to the start of the current chapter. */
@@ -69,7 +79,7 @@ export default function GameControls() {
   // Keyboard.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || isTyping(event.target)) return;
+      if (roam.active || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || isTyping(event.target)) return;
       const key = event.key.toLowerCase();
       let handled = true;
       if (key === "s") step(1, reducedMotion);
@@ -97,6 +107,11 @@ export default function GameControls() {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
       const pad = Array.from(navigator.getGamepads?.() ?? []).find(Boolean);
+      // Free roam has its own pad handling (RoamHud); keep polling, do nothing here.
+      if (pad && roam.active) {
+        frame = requestAnimationFrame(poll);
+        return;
+      }
       if (!pad) {
         frame = 0;
         return;
@@ -112,7 +127,16 @@ export default function GameControls() {
           }
         } else held.delete(i);
       };
-      tap(0, () => step(1, reducedMotion)); // A
+      // A: step, or at the waiting lift, hold to raise the medallion.
+      if (pressed(0) && atGate()) {
+        if (!held.has(0)) {
+          held.add(0);
+          startHold();
+        }
+      } else if (!pressed(0) && held.has(0) && medallion.holding) {
+        held.delete(0);
+        endHold();
+      } else tap(0, () => step(1, reducedMotion));
       tap(13, () => step(1, reducedMotion)); // D-pad down
       tap(1, () => step(-1, reducedMotion)); // B
       tap(12, () => step(-1, reducedMotion)); // D-pad up
@@ -126,7 +150,9 @@ export default function GameControls() {
       if (!reducedMotion && Math.abs(y) > STICK_DEADZONE) {
         const speed = Math.sign(y) * ((Math.abs(y) - STICK_DEADZONE) / (1 - STICK_DEADZONE)) ** 2 * STICK_SPEED;
         const smoother = ScrollSmoother.get();
-        const next = Math.max(0, currentScroll() + speed * dt);
+        interruptRide();
+        let next = Math.max(0, currentScroll() + speed * dt);
+        if (speed > 0 && blockedByGate(next)) next = Math.min(next, Math.max(currentScroll(), gateY()));
         if (smoother) smoother.scrollTop(next);
         else window.scrollTo(0, next);
         show.current("gamepad");

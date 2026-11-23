@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { INTRO, smoothstep } from "@/lib/intro";
+import { useQuality } from "@/lib/quality";
 import { onJourneyPosition } from "@/lib/scroll";
 import styles from "./VoidVeil.module.css";
 
@@ -9,6 +10,8 @@ import styles from "./VoidVeil.module.css";
 // and film grain, over the canvas. It lifts as the fire catches and is gone by the flash.
 export default function VoidVeil() {
   const root = useRef<HTMLDivElement>(null);
+  // Full quality gets grain (and halftone, leaks) from the canvas film pass; Lite keeps this CSS grain.
+  const { quality } = useQuality();
 
   useEffect(
     () =>
@@ -24,7 +27,8 @@ export default function VoidVeil() {
 
   return (
     <div ref={root} className={styles.veil} aria-hidden>
-      <div className={styles.grain} />
+      {quality === "lite" && <div className={styles.grain} />}
+      <div className={styles.leak} />
     </div>
   );
 }

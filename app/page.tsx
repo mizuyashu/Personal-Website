@@ -1,4 +1,3 @@
-import WorldLoader from "@/components/canvas/WorldLoader";
 import Chapter from "@/components/chapters/Chapter";
 import About from "@/components/chapters/About";
 import Constellation from "@/components/chapters/Constellation";
@@ -16,15 +15,17 @@ import CompassNav from "@/components/ui/CompassNav";
 import CornerMenu from "@/components/ui/CornerMenu";
 import GameControls from "@/components/ui/GameControls";
 import Loader from "@/components/ui/Loader";
+import Medallion from "@/components/ui/Medallion";
+import RoamHud from "@/components/ui/RoamHud";
 import { chapters } from "@/content/chapters";
 
-// The whole journey: one fixed canvas behind, chapter overlays that sit under the scroll
+// The whole journey (the one fixed canvas lives in app/layout.tsx): chapter overlays that sit under the scroll
 // content (blueprint HUD), the chapters in order, fixed overlays on top (intro name mark +
 // flash), corner UI, and the loader over everything.
 export default function Home() {
   return (
-    <>
-      <WorldLoader />
+    // data-journey: everything here fades out while a sub-page is open (globals.css).
+    <div data-journey>
       <BlueprintHud />
       <Journey>
         <main>
@@ -76,7 +77,9 @@ export default function Home() {
       <CornerMenu />
       <CompassNav />
       <GameControls />
+      <Medallion />
+      <RoamHud />
       <Loader />
-    </>
+    </div>
   );
 }

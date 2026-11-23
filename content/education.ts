@@ -17,6 +17,8 @@ export const education = {
   intro: "TODO(content): one line about what you’re learning and where it’s heading.",
   constellationLabel: "Skill constellation",
   unlocked: "Skill unlocked",
+  /** When the whole constellation has drawn: it is yours (docs/vision.md §17, lib/ownStar.ts). */
+  ownStar: { label: "Your constellation", text: "A star of your own" },
   skills: [
     { name: "Skill I", x: 12, y: 44, unlock: true },
     { name: "Skill II", x: 26, y: 30, unlock: true },
@@ -38,9 +40,19 @@ export const education = {
   ] as [number, number][],
   recordTitle: "The record",
   timeline: [
-    { when: "Year 1", what: "TODO(content)" },
-    { when: "Year 2", what: "TODO(content)" },
+    { id: "year-1", when: "Year 1", what: "TODO(content)" },
+    { id: "year-2", when: "Year 2", what: "TODO(content)" },
   ],
+  /** Each year's own page (app/education/[year], docs/vision.md §18). TODO(content) throughout. */
+  yearPage: {
+    open: "Open year",
+    summary: "TODO(content): what this year was about.",
+    coursesTitle: "Courses",
+    courses: ["TODO(content)", "TODO(content)", "TODO(content)"],
+    skillsTitle: "Skills this year",
+    skills: ["TODO(content)", "TODO(content)"],
+    back: "Back to the journey",
+  },
   awardsTitle: "Awards",
   awards: ["TODO(content)"],
 } as const;
