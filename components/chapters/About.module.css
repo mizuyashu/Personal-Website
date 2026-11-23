@@ -159,3 +159,22 @@
     display: none;
   }
 }
+
+/* "See more": opens the part's own page. */
+.more {
+  display: inline-block;
+  margin-top: 1rem;
+  font-family: var(--font-stem);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--gold) 40%, transparent);
+}
+
+.more:hover,
+.more:focus-visible {
+  border-bottom-color: var(--gold);
+  outline: none;
+}

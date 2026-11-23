@@ -9,7 +9,8 @@
   visibility: hidden;
 }
 
-/* Gold ornament frame around the screen; it blurs and swells as it dissolves. */
+/* Gold ornament frame around the screen; it swells and fades as it dissolves. (No CSS blur:
+   re-blurring a full-screen layer every frame cost a ~0.2 s hitch here; 2026-11-23.) */
 .frame {
   --dissolve: 0;
   z-index: 3;
@@ -18,8 +19,8 @@
   border: 1px solid var(--gold);
   outline: 1px solid color-mix(in srgb, var(--gold) 55%, transparent);
   outline-offset: 6px;
-  filter: blur(calc(var(--dissolve) * 10px));
   transform: scale(calc(1 + var(--dissolve) * 0.06));
+  will-change: opacity, transform;
 }
 
 .rule {
@@ -44,13 +45,13 @@
   --rise: 0;
   z-index: 3;
   opacity: 0;
+  will-change: opacity;
 }
 
 .bokeh span {
   position: absolute;
   border-radius: 50%;
   background: radial-gradient(circle, color-mix(in srgb, var(--gold) 80%, transparent), transparent 70%);
-  filter: blur(2px);
   transform: translate(-50%, calc(-50% - var(--rise) * 18vh)) scale(calc(0.6 + var(--rise) * 0.8));
 }
 

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Instance, Instances } from "@react-three/drei";
-import { AdditiveBlending, Color, DoubleSide, MeshStandardMaterial, type Group, type ShaderMaterial } from "three";
+import { AdditiveBlending, Color, DoubleSide, MeshStandardMaterial, type Group, type PointLight, type ShaderMaterial } from "three";
 import { palette } from "@/lib/palette";
 import { journey } from "@/lib/scroll";
 import planeVert from "@/shaders/plane.vert.glsl";
@@ -31,8 +31,13 @@ const NICHES = WINDOWS.filter((x) => x + 1.2 < OPENING_X);
 /** The window's light lands on the floor this far toward the front. */
 const POOL_Z = F + 1.4;
 
+// Lights stay outside the hidden group and are dimmed to 0 instead of hidden: three.js builds lit
+// materials for a fixed number of lights, so a light appearing or vanishing recompiles every lit
+// material (a 0.7–1 s freeze in the lift, 2026-11-23). Keep the light count constant.
 export default function Narthex({ lite, reducedMotion }: { lite: boolean; reducedMotion: boolean }) {
   const group = useRef<Group>(null);
+  const lampA = useRef<PointLight>(null);
+  const lampB = useRef<PointLight>(null);
   const shafts = useRef<(ShaderMaterial | null)[]>([]);
 
   const materials = useMemo(() => {
@@ -69,6 +74,9 @@ export default function Narthex({ lite, reducedMotion }: { lite: boolean; reduce
     const p = journey.position;
     // Only needed until the walk down the nave has begun.
     group.current.visible = p > CATHEDRAL_START && p < 1.35;
+    const on = group.current.visible ? 1 : 0;
+    if (lampA.current) lampA.current.intensity = 16 * on;
+    if (lampB.current) lampB.current.intensity = 14 * on;
     if (!group.current.visible || reducedMotion) return;
     for (const m of shafts.current) if (m) m.uniforms.uTime.value += delta;
   });
@@ -83,6 +91,7 @@ export default function Narthex({ lite, reducedMotion }: { lite: boolean; reduce
   const lowerWall = SPRING - FLOOR_Y;
 
   return (
+    <>
     <group ref={group} visible={false}>
       {/* Walls: back (windows), front (blind arcade, up to the nave opening), the two ends */}
       <mesh position={[(L + R) / 2, (SPRING + FLOOR_Y) / 2, B]} material={materials.wall}>
@@ -205,12 +214,14 @@ export default function Narthex({ lite, reducedMotion }: { lite: boolean; reduce
         ))}
       </group>
 
+    </group>
+      {/* Outside the group: dimmed, never hidden (see the note at the top of the file). */}
       {!lite && (
         <>
-          <pointLight position={[-19, 3, 0.6]} color={palette.ivory} intensity={16} distance={14} decay={2} />
-          <pointLight position={[-7, 3, 0.6]} color={palette.ivory} intensity={14} distance={14} decay={2} />
+          <pointLight ref={lampA} position={[-19, 3, 0.6]} color={palette.ivory} intensity={0} distance={14} decay={2} />
+          <pointLight ref={lampB} position={[-7, 3, 0.6]} color={palette.ivory} intensity={0} distance={14} decay={2} />
         </>
       )}
-    </group>
+    </>
   );
 }

@@ -20,7 +20,12 @@ const BLEND_START = [INTRO.fadeOutStart, CORRIDOR.exitStart, 0.92, 0.9, 0.75];
 
 const scratch = new Color();
 /** The sub-page space's ground: the blueprint's ivory for projects, the dawn sky for years. */
-const SPACE_GROUND = { project: new Color(palette.ivory), year: new Color(palette.sky).lerp(new Color(palette.ivory), 0.35) };
+const SPACE_GROUND = {
+  project: new Color(palette.ivory),
+  year: new Color(palette.sky).lerp(new Color(palette.ivory), 0.35),
+  // About pages stay in the embers: near-black with a crimson-violet warmth.
+  about: new Color(palette.ink).lerp(new Color(palette.crimsonViolet), 0.3),
+};
 
 /** Ground colour inside one chapter, before blending to the next. */
 function groundIn(chapter: number, local: number, out: Color) {

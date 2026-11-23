@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Instance, Instances } from "@react-three/drei";
-import { BackSide, Color, DoubleSide, LatheGeometry, MeshStandardMaterial, Path, Shape, ShapeGeometry, Vector2, type Group, type Mesh } from "three";
+import { BackSide, Color, DoubleSide, LatheGeometry, MeshStandardMaterial, Path, Shape, ShapeGeometry, Vector2, type Group, type Mesh, type PointLight } from "three";
 import { medallion } from "@/lib/medallion";
 import { palette } from "@/lib/palette";
 import { journey } from "@/lib/scroll";
@@ -64,8 +64,13 @@ function useStatueGeometry() {
   }, []);
 }
 
+// Lights stay outside the hidden group and are dimmed to 0 instead of hidden: three.js builds lit
+// materials for a fixed number of lights, so a light appearing or vanishing recompiles every lit
+// material (a 0.7–1 s freeze in the lift, 2026-11-23). Keep the light count constant.
 export default function Rotunda({ lite }: { lite: boolean }) {
   const group = useRef<Group>(null);
+  const throneLamp = useRef<PointLight>(null);
+  const liftLamp = useRef<PointLight>(null);
   const lift = useRef<Group>(null);
   const liftTop = useRef<Mesh>(null);
   const statue = useStatueGeometry();
@@ -123,6 +128,9 @@ export default function Rotunda({ lite }: { lite: boolean }) {
     if (!group.current) return;
     const p = journey.position;
     group.current.visible = p > CATHEDRAL_START && p < 2.15;
+    const on = group.current.visible ? 1 : 0;
+    if (throneLamp.current) throneLamp.current.intensity = (lite ? 14 : 26) * on;
+    if (liftLamp.current) liftLamp.current.intensity = (lite ? 24 : 40) * on;
     if (!group.current.visible) return;
     // The lift carries the camera: it rides at eye height below it (and stays clear of the
     // pull-offs before each project, which swing the camera down and out to the side).
@@ -136,6 +144,7 @@ export default function Rotunda({ lite }: { lite: boolean }) {
   const lowerWallHeight = VAULT_Y + NAVE_HALF - FLOOR_Y;
 
   return (
+    <>
     <group ref={group} visible={false}>
       {/* Floor ring round the lift's pit, and the pit itself (left open as the lift rises) */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, FLOOR_Y + 0.003, CROSSING_Z]} material={materials.floor}>
@@ -341,11 +350,13 @@ export default function Rotunda({ lite }: { lite: boolean }) {
             <torusGeometry args={[0.6, 0.06, 8, 48]} />
           </mesh>
         </group>
-        <pointLight position={[0, 6, 2.5]} color={palette.gold} intensity={lite ? 14 : 26} distance={12} decay={2} />
       </group>
 
-      {/* Warm light pooled on the lift */}
-      <pointLight position={[0, 6, CROSSING_Z]} color={palette.gold} intensity={lite ? 24 : 40} distance={18} decay={2} />
     </group>
+      {/* Outside the group: dimmed, never hidden (see the note at the top of the file).
+          Light on the throne, and warm light pooled on the lift. */}
+      <pointLight ref={throneLamp} position={[0, FLOOR_Y + 6, THRONE_Z + 2.5]} color={palette.gold} intensity={0} distance={12} decay={2} />
+      <pointLight ref={liftLamp} position={[0, 6, CROSSING_Z]} color={palette.gold} intensity={0} distance={18} decay={2} />
+    </>
   );
 }

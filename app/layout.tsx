@@ -43,7 +43,7 @@ export default function RootLayout({ children, modal }: { children: ReactNode; m
         <WorldLoader />
         {children}
         {modal}
-        {/* Temporary (remove before launch): see docs/compatibility.md */}
+        {/* FPS meter: stays at launch (Michael, 2026-11-23); see docs/compatibility.md */}
         <FpsMeter />
       </body>
     </html>

@@ -2,6 +2,7 @@
 
 import { useEffect, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
+import { about, aboutCopy, aboutPart } from "@/content/about";
 import { education } from "@/content/education";
 import { projects, projectsCopy } from "@/content/projects";
 import { presentations } from "@/components/projects/presentations";
@@ -12,11 +13,13 @@ import { cssVar } from "@/lib/palette";
 import { closeView, openView } from "@/lib/view";
 import styles from "./SubPage.module.css";
 
-type Props = { kind: "project" | "year"; id: string; mode: "modal" | "page" };
+type Props = { kind: "project" | "year" | "about"; id: string; mode: "modal" | "page" };
 
 /** Where "back" lands on the journey when there's no journey behind the page (a direct load). */
 function anchorFor(kind: Props["kind"], id: string) {
-  return kind === "project" ? `project-${id}` : "education-record";
+  if (kind === "project") return `project-${id}`;
+  if (kind === "about") return `about-${id}`;
+  return "education-record";
 }
 
 // A sub-page (docs/vision.md §18): a project or an education year. Opened from the journey it is
@@ -28,6 +31,7 @@ export default function SubPage({ kind, id, mode }: Props) {
   const reducedMotion = useReducedMotion();
   const project = kind === "project" ? projects.find((p) => p.id === id) : undefined;
   const year = kind === "year" ? education.timeline.find((t) => t.id === id) : undefined;
+  const part = kind === "about" ? aboutPart(id) : undefined;
 
   useEffect(() => {
     openView({ kind, id }, mode === "page" || reducedMotion);
@@ -56,14 +60,14 @@ export default function SubPage({ kind, id, mode }: Props) {
     return () => window.removeEventListener("keydown", onKey);
   });
 
-  if (!project && !year) return null;
+  if (!project && !year && !part) return null;
   const instant = mode === "page" || reducedMotion;
 
   return (
-    <div className={styles.page} data-kind={kind} data-instant={instant} role="dialog" aria-modal={mode === "modal"} aria-label={project?.title ?? year?.when}>
+    <div className={styles.page} data-kind={kind} data-instant={instant} role="dialog" aria-modal={mode === "modal"} aria-label={project?.title ?? year?.when ?? part?.title}>
       <div className={styles.panel} data-own-scroll>
         <button type="button" className={styles.back} onClick={close}>
-          <span aria-hidden>←</span> {education.yearPage.back} <kbd>Esc</kbd>
+          <span aria-hidden>←</span> {part ? aboutCopy.back : education.yearPage.back} <kbd>Esc</kbd>
         </button>
 
         {project && (
@@ -114,6 +118,29 @@ export default function SubPage({ kind, id, mode }: Props) {
                 <li key={i}>{s}</li>
               ))}
             </ul>
+          </article>
+        )}
+
+        {part && (
+          <article className={styles.content}>
+            <p className={styles.numeral}>IV</p>
+            <h1 className={styles.title}>{part.title}</h1>
+            <p className={styles.summary}>{part.page.summary}</p>
+            {part.id === "games" && (
+              <ul className={styles.list}>
+                {about.games.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            )}
+            <h2 className={styles.label}>{aboutCopy.galleryTitle}</h2>
+            <div className={styles.gallery}>
+              {part.page.gallery.map((item, i) => (
+                <div key={i} className={styles.tile}>
+                  {item}
+                </div>
+              ))}
+            </div>
           </article>
         )}
       </div>

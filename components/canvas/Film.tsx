@@ -4,12 +4,13 @@ import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Bloom, ChromaticAberration, EffectComposer } from "@react-three/postprocessing";
 import { BlendFunction, Effect, type BloomEffect, type ChromaticAberrationEffect } from "postprocessing";
-import { Color, Uniform, Vector2 } from "three";
+import { ACESFilmicToneMapping, Color, NoToneMapping, Uniform, Vector2 } from "three";
 import { BONFIRE, kindleSwell } from "@/lib/bonfire";
 import { DESCENT } from "@/lib/embers";
 import { INTRO, clamp01, kindleAmount, smoothstep } from "@/lib/intro";
 import { palette } from "@/lib/palette";
 import { journey, onJourneyPosition } from "@/lib/scroll";
+import { useView } from "@/lib/view";
 import filmFrag from "@/shaders/film.frag.glsl";
 
 // The shader feel (docs/vision.md §19): soft bloom, chromatic fringes, halftone in the shadows,
@@ -18,6 +19,11 @@ import filmFrag from "@/shaders/film.frag.glsl";
 // turns the renderer's tone mapping off while mounted) changes nothing else about them; the
 // cathedral, blueprint and dawn render exactly as before (the composer is unmounted there).
 // Full quality only. Reduced motion: still (no drifting leaks or animated grain).
+//
+// The composer stays mounted for the whole visit and is only switched on and off (2026-11-23):
+// mounting it compiled its shaders on the spot, a ~0.3 s hitch right in the descent's white
+// flash. While it is off, the renderer's tone mapping is put back (ACES) every frame, so the
+// cathedral, blueprint, dawn and the project/year sub-pages look exactly as before.
 
 class FilmEffect extends Effect {
   constructor() {
@@ -41,7 +47,7 @@ const Film = forwardRef<FilmEffect>(function Film(_, ref) {
   return <primitive ref={ref} object={effect} dispose={null} />;
 });
 
-/** Where the composer is mounted: the void, and from the descent's white flash onward. */
+/** Where the composer is on: the void, and from the descent's bokeh onward. */
 function inDarkChapters(p: number) {
   return p < INTRO.flashEnd || p > 3 + DESCENT.bokeh;
 }
@@ -76,13 +82,19 @@ function moodAt(p: number): Mood {
   return { bloom: 0.9 + pop * 3, fringe: 0.001 + pop * 0.006, leak: 0.08 + pop * 0.2, halftone: 0.4, grain: 0.3, a: palette.gold, b: palette.ember };
 }
 
-function FilmPasses({ reducedMotion }: { reducedMotion: boolean }) {
+function FilmPasses({ reducedMotion, enabled }: { reducedMotion: boolean; enabled: boolean }) {
   const film = useRef<FilmEffect>(null);
   const bloom = useRef<BloomEffect>(null);
   const fringe = useRef<ChromaticAberrationEffect>(null);
   const offset = useMemo(() => new Vector2(0.001, 0.001), []);
 
+  // Before anything renders: tone mapping off for the composer, ACES (the default) without it.
+  useFrame(({ gl }) => {
+    gl.toneMapping = enabled ? NoToneMapping : ACESFilmicToneMapping;
+  }, -20);
+
   useFrame((_, delta) => {
+    if (!enabled) return;
     const mood = moodAt(journey.position);
     if (bloom.current) bloom.current.intensity = mood.bloom;
     if (fringe.current) fringe.current.offset.set(mood.fringe, mood.fringe * 0.6);
@@ -97,7 +109,7 @@ function FilmPasses({ reducedMotion }: { reducedMotion: boolean }) {
   });
 
   return (
-    <EffectComposer multisampling={0} enableNormalPass={false}>
+    <EffectComposer enabled={enabled} multisampling={0} enableNormalPass={false}>
       <Bloom ref={bloom} mipmapBlur intensity={0.5} luminanceThreshold={0.55} luminanceSmoothing={0.25} radius={0.75} />
       <ChromaticAberration ref={fringe} offset={offset} radialModulation modulationOffset={0.25} />
       <Film ref={film} />
@@ -106,7 +118,10 @@ function FilmPasses({ reducedMotion }: { reducedMotion: boolean }) {
 }
 
 export default function FilmComposer({ reducedMotion }: { reducedMotion: boolean }) {
-  const [active, setActive] = useState(() => inDarkChapters(journey.position));
-  useEffect(() => onJourneyPosition((p) => setActive(inDarkChapters(p))), []);
-  return active ? <FilmPasses reducedMotion={reducedMotion} /> : null;
+  const [dark, setDark] = useState(() => inDarkChapters(journey.position));
+  useEffect(() => onJourneyPosition((p) => setDark(inDarkChapters(p))), []);
+  // A project or year page lives in its own lit space: no film there (about pages keep it).
+  const sub = useView();
+  const enabled = dark && (!sub || sub.kind === "about");
+  return <FilmPasses reducedMotion={reducedMotion} enabled={enabled} />;
 }

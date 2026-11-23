@@ -1,4 +1,4 @@
-/* Temporary FPS readout, top centre (remove before launch). */
+/* FPS readout, top centre (kept at launch; F hides it). */
 .meter {
   position: fixed;
   z-index: 20;

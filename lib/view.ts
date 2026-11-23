@@ -9,7 +9,7 @@ import { gsap } from "@/lib/gsap";
 // `view.t` is the flight (0 = the journey, 1 = the sub-page space); CameraRig, the space scene
 // and the backdrop read it every frame.
 
-export type SubView = { kind: "project" | "year"; id: string };
+export type SubView = { kind: "project" | "year" | "about"; id: string };
 
 export const view: { current: SubView | null; t: number } = { current: null, t: 0 };
 

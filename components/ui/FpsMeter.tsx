@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useQuality } from "@/lib/quality";
 import styles from "./FpsMeter.module.css";
 
-// Temporary performance readout (remove before launch, docs/milestones.md M8): frames per
+// Performance readout (stays at launch: Michael likes it, 2026-11-23; F hides it): frames per
 // second, the slowest frame, the canvas's real pixel density, and the quality mode. Top centre. F hides / shows it
 // (remembered). Meant for testing on other machines (e.g. the M5 Pro report).
 

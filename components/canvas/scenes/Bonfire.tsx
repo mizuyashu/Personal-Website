@@ -35,6 +35,9 @@ const FLAME_BASE_Y = -4.4;
 // a fan of sparks bursts out and the light flares, then it settles into a big, wild fire.
 // Shader flame on crossed planes, a ground glow, a column of sparks. Follows the camera;
 // fades as the golden flash takes over.
+// Lights stay outside the hidden group and are dimmed to 0 instead of hidden: three.js builds lit
+// materials for a fixed number of lights, so a light appearing or vanishing recompiles every lit
+// material (a 0.7–1 s freeze in the lift, 2026-11-23). Keep the light count constant.
 export default function Bonfire({ lite, reducedMotion }: { lite: boolean; reducedMotion: boolean }) {
   const group = useRef<Group>(null);
   const flameRoot = useRef<Group>(null);
@@ -132,10 +135,14 @@ export default function Bonfire({ lite, reducedMotion }: { lite: boolean; reduce
     const local = journey.position - CHAPTER;
     const presence = smoothstep(-0.1, 0.06, local) * (1 - smoothstep(BONFIRE.flashStart, BONFIRE.flashPeak, local));
     group.current.visible = presence > 0;
-    if (!group.current.visible) return;
+    if (!group.current.visible) {
+      if (light.current) light.current.intensity = 0;
+      return;
+    }
     // Follow the base path, not the camera: the camera's side moves then show parallax.
     const base = basePath(journey.position, chapters.length);
     group.current.position.set(0, base.y, base.z);
+    light.current?.position.set(0, base.y + FLAME_BASE_Y + 2, base.z - 9);
 
     // Ignition, driven by scroll like the intro flash: 0 → 1 across the start of the chapter.
     const ignite = reducedMotion ? 1 : clamp01((local - BONFIRE.igniteStart) / (BONFIRE.igniteEnd - BONFIRE.igniteStart));
@@ -174,6 +181,7 @@ export default function Bonfire({ lite, reducedMotion }: { lite: boolean; reduce
   });
 
   return (
+    <>
     <group ref={group} visible={false}>
       <mesh ref={glowMesh} position={[0, FLAME_BASE_Y + 0.2, -12]} scale={[11, 5, 1]}>
         <planeGeometry args={[1, 1]} />
@@ -207,7 +215,9 @@ export default function Bonfire({ lite, reducedMotion }: { lite: boolean; reduce
         </bufferGeometry>
         <shaderMaterial ref={burst} vertexShader={burstVert} fragmentShader={embersFrag} uniforms={uniforms.burst} transparent depthWrite={false} blending={AdditiveBlending} />
       </points>
-      <pointLight ref={light} position={[0, FLAME_BASE_Y + 2, -9]} color={palette.gold} intensity={0} distance={24} decay={1.5} />
     </group>
+      {/* Outside the group: dimmed, never hidden (see the note at the top of the file). */}
+      <pointLight ref={light} position={[0, FLAME_BASE_Y + 2, -9]} color={palette.gold} intensity={0} distance={24} decay={1.5} />
+    </>
   );
 }

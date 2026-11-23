@@ -16,6 +16,7 @@ import {
   type Group,
   type ShaderMaterial,
 } from "three";
+import { aboutPart } from "@/content/about";
 import { projects } from "@/content/projects";
 import { palette } from "@/lib/palette";
 import { useView, view } from "@/lib/view";
@@ -28,7 +29,9 @@ import { SUBPAGE_SPACE, seededRandom } from "../layout";
 // when a project page or an education year opens. One huge object, at an isometric angle,
 // off to the right (above, on portrait screens); the page's clean text sits on the left.
 // Website: a giant laptop with a blueprint screen. Summer build: an exploded stack of plates
-// that breathes open and shut. A year: its constellation in 3D. Generated geometry only.
+// that breathes open and shut. A year: its constellation in 3D. An About part (games, music,
+// the cat, moments): a fan of empty photo frames in the embers' colours, waiting for Michael's
+// own photos. Generated geometry only.
 
 /** Plate fill: ivory tinted with the blueprint's cobalt, so the plates read on an ivory sky. */
 const plateTint = new Color(palette.ivory).lerp(new Color(palette.cobalt), 0.16);
@@ -175,6 +178,45 @@ function YearConstellation({ seed }: { seed: number }) {
   );
 }
 
+/** An About part: a fan of photo frames (ivory borders, dark crimson-violet faces), ember-lit. */
+function PhotoFan({ count, still }: { count: number; still: boolean }) {
+  const fan = useRef<Group>(null);
+  const glow = useMemo(() => ({ uOpacity: { value: 0.5 }, uGold: { value: new Color(palette.ember) }, uIvory: { value: new Color(palette.gold) } }), []);
+  useFrame((state) => {
+    if (!fan.current) return;
+    // The fan opens and closes a little, like cards held in a hand.
+    const t = still ? 0 : state.clock.elapsedTime;
+    const spread = 0.17 + Math.sin(t * 0.5) * 0.03;
+    fan.current.children.forEach((frame, i) => {
+      const k = i - (fan.current!.children.length - 1) / 2;
+      frame.rotation.set(0, 0, -k * spread);
+      frame.position.set(k * 0.55, -Math.abs(k) * 0.12, i * 0.06);
+    });
+  });
+  return (
+    <group>
+      <mesh position={[0, 0.3, -0.8]} scale={7}>
+        <planeGeometry args={[1, 1]} />
+        <shaderMaterial vertexShader={planeVert} fragmentShader={glowFrag} uniforms={glow} transparent depthWrite={false} blending={AdditiveBlending} />
+      </mesh>
+      <group ref={fan}>
+        {Array.from({ length: count }, (_, i) => (
+          <group key={i}>
+            <mesh>
+              <planeGeometry args={[2.1, 2.7]} />
+              <meshBasicMaterial color={palette.ivory} side={DoubleSide} />
+            </mesh>
+            <mesh position={[0, 0.12, 0.01]}>
+              <planeGeometry args={[1.8, 2.1]} />
+              <meshBasicMaterial color={new Color(palette.crimsonViolet).lerp(new Color(palette.ink), 0.35)} side={DoubleSide} />
+            </mesh>
+          </group>
+        ))}
+      </group>
+    </group>
+  );
+}
+
 export default function SubpageSpace({ reducedMotion }: { reducedMotion: boolean }) {
   const current = useView();
   const pool = useMemo(() => ({ uOpacity: { value: 0.35 }, uGold: { value: new Color(palette.gold) }, uIvory: { value: new Color(palette.ivory) } }), []);
@@ -201,6 +243,7 @@ export default function SubpageSpace({ reducedMotion }: { reducedMotion: boolean
       <group ref={object}>
         {project?.format === "device" && <Laptop />}
         {project?.format === "exploded" && <ExplodedStack still={reducedMotion} />}
+        {current?.kind === "about" && <PhotoFan count={Math.min(5, Math.max(3, aboutPart(current.id)?.page.gallery.length ?? 3))} still={reducedMotion} />}
         {current?.kind === "year" && <YearConstellation seed={current.id.length * 97 + current.id.charCodeAt(current.id.length - 1)} />}
       </group>
       {/* A soft pool of light under the object */}

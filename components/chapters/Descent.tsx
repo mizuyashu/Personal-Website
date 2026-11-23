@@ -37,12 +37,12 @@ export default function Descent() {
           el.style.visibility = opacity > 0.001 ? "visible" : "hidden";
         };
         const frameIn = smoothstep(DESCENT.frameIn - 0.04, DESCENT.frameFull, t);
-        const dissolve = smoothstep(DESCENT.frameFull + 0.01, DESCENT.bokeh, t);
+        const dissolve = smoothstep(DESCENT.frameHold, DESCENT.bokeh, t);
         set(frame.current, frameIn * (1 - dissolve));
         if (frame.current) frame.current.style.setProperty("--dissolve", dissolve.toFixed(3));
         const bokehAmount = dissolve * (1 - smoothstep(DESCENT.bokeh + 0.02, DESCENT.whitePeak, t));
         set(bokeh.current, reducedMotion ? 0 : bokehAmount);
-        if (bokeh.current) bokeh.current.style.setProperty("--rise", clamp01((t - DESCENT.frameFull) / 0.12).toFixed(3));
+        if (bokeh.current) bokeh.current.style.setProperty("--rise", clamp01((t - DESCENT.frameFull) / (DESCENT.whitePeak - DESCENT.frameFull)).toFixed(3));
         const flash = smoothstep(DESCENT.bokeh, DESCENT.whitePeak, t) * (1 - smoothstep(DESCENT.whitePeak, DESCENT.dark, t));
         set(white.current, reducedMotion ? 0 : flash);
         const closed = smoothstep(DESCENT.dark, DESCENT.letterboxClosed, t) * (1 - smoothstep(DESCENT.letterboxOpen, 1.02, t));

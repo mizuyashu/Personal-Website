@@ -5,13 +5,19 @@ import { Euler, MathUtils, Matrix4, Quaternion, Vector3, type PerspectiveCamera 
 import { journey } from "@/lib/scroll";
 import { view } from "@/lib/view";
 import { roam, stepRoam } from "@/lib/roam";
-import { BLUEPRINT_CENTRE, KEY_FRAMES, SUBPAGE_SPACE, cameraPose, type CameraPose } from "./layout";
+import { BLUEPRINT_CENTRE, CATHEDRAL_START, KEY_FRAMES, SUBPAGE_SPACE, cameraPose, type CameraPose } from "./layout";
 
 type Props = { chapterCount: number; reducedMotion: boolean };
 
 const BASE_FOV = 50;
-/** A pose this far from the camera is a cut (a scene change), not something to glide to. */
-const CUT_DISTANCE = 6;
+/**
+ * The pose jumping this far in one frame is a cut (a scene change, a jump to another place),
+ * not something to glide to. It compares the pose with the previous frame's pose, never with
+ * the camera: the camera trails the pose on purpose (easing), and in the lift's surge it trails
+ * by well over this distance. Comparing with the camera made it snap forward again and again
+ * there (2026-11-23: "glitches like server lag").
+ */
+const CUT_DISTANCE = 30;
 const MAX_FOV = 80;
 
 /** Vertical field of view: 50° on landscape; wider on portrait so the sides of scenes stay in frame. */
@@ -33,6 +39,8 @@ const journeyEye = new Vector3();
 const journeyLook = new Quaternion();
 const spaceEye = new Vector3(0, SUBPAGE_SPACE.y, SUBPAGE_SPACE.eye);
 const spaceLook = new Quaternion();
+const lastPose = new Vector3();
+let lastPosition = Number.NaN;
 
 /**
  * A sub-page is open (or opening/closing): fly between the journey pose and the sub-page space.
@@ -94,9 +102,14 @@ export default function CameraRig({ chapterCount, reducedMotion }: Props) {
     const pose = cameraPose(journey.position, chapterCount);
     if (view.t > 0) return flySubpage(camera, pose);
     if (roam.t > 0 || roam.active) return roamCamera(camera, pose, delta);
-    // A cut, not a glide, when the pose jumps (entering the cathedral at the start of chapter II).
-    const jump = Math.hypot(pose.x - camera.position.x, pose.y - camera.position.y, pose.z - camera.position.z);
-    if (jump > CUT_DISTANCE) {
+    // A cut, not a glide, when the pose itself jumps: entering the cathedral at the start of
+    // chapter II, the first frame, or a jump elsewhere (e.g. returning from a direct sub-page).
+    const previous = lastPosition;
+    lastPosition = journey.position;
+    const crossed = (previous < CATHEDRAL_START) !== (journey.position < CATHEDRAL_START);
+    const jump = Math.hypot(pose.x - lastPose.x, pose.y - lastPose.y, pose.z - lastPose.z);
+    lastPose.set(pose.x, pose.y, pose.z);
+    if (Number.isNaN(previous) || crossed || jump > CUT_DISTANCE) {
       camera.position.set(pose.x, pose.y, pose.z);
       orientation(pose, camera.quaternion);
       return;
@@ -105,6 +118,8 @@ export default function CameraRig({ chapterCount, reducedMotion }: Props) {
     camera.position.y = MathUtils.damp(camera.position.y, pose.y, 6, delta);
     camera.position.z = MathUtils.damp(camera.position.z, pose.z, 6, delta);
     camera.quaternion.slerp(orientation(pose, target), 1 - Math.exp(-6 * delta));
-  });
+    // Before every scene's frame loop: scenes that follow the camera (the lift under your feet)
+    // must see where it is this frame, not where it was (else the lift drum flashed into view).
+  }, -5);
   return null;
 }
