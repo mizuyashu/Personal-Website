@@ -8,7 +8,26 @@ import { medallion } from "@/lib/medallion";
 import { palette } from "@/lib/palette";
 import { journey } from "@/lib/scroll";
 import { view } from "@/lib/view";
-import { CROSSING_Z, FLOOR_Y, LIFT_R, NAVE_HALF, ROTUNDA_R, ROTUNDA_TOP, VAULT_Y, CATHEDRAL_START } from "../layout";
+import {
+  CATHEDRAL_START,
+  CROSSING_Z,
+  FLOOR_Y,
+  LIFT_MARKER_ANGLES,
+  LIFT_MARKER_RING,
+  LIFT_R,
+  NAVE_HALF,
+  ROTUNDA_COLUMN_ANGLES,
+  ROTUNDA_COLUMN_RING,
+  ROTUNDA_R,
+  ROTUNDA_TOP,
+  STATUE_ANGLES,
+  STATUE_RING,
+  STATUE_SCALE,
+  THRONE_DAIS,
+  THRONE_Z,
+  VAULT_Y,
+  rotundaRing,
+} from "../layout";
 import { makeFloorTexture, makeLiftTexture, makeReliefTexture } from "./textures";
 
 // The rotunda at the crossing (docs/vision.md §19): a big round hall where the nave arrives.
@@ -19,17 +38,16 @@ import { makeFloorTexture, makeLiftTexture, makeReliefTexture } from "./textures
 // area, empty, waiting. Above the rotunda's roof the lantern tower continues (Arches.tsx).
 
 const GALLERY_INNER = 7.4;
-const COLUMN_RING = 8.6;
-/** Columns round the ring, leaving the nave's way in (angle 0 = toward the nave, +z) clear. */
-const RING_ANGLES = Array.from({ length: 12 }, (_, k) => Math.PI / 12 + (k * Math.PI) / 6);
-/** Statues between the columns, clear of the nave opening and of the throne behind the lift. */
-const STATUE_ANGLES = [1.3, 1.95, 2.55, -1.3, -1.95, -2.55];
-const MARKER_ANGLES = Array.from({ length: 8 }, (_, k) => Math.PI / 8 + (k * Math.PI) / 4);
-const THRONE_Z = CROSSING_Z - 6.6;
+// The ground colonnade, the statues and the throne stand where layout.ts says (free roam walks
+// round them): columns round the ring leave the nave's way in (angle 0, +z) clear; statues stand
+// between them, clear of the nave opening and of the throne behind the lift.
+const COLUMN_RING = ROTUNDA_COLUMN_RING;
+const RING_ANGLES = ROTUNDA_COLUMN_ANGLES;
+const MARKER_ANGLES = LIFT_MARKER_ANGLES;
 /** The nave's opening in the rotunda wall (half-angle), up to the nave vault's crown. */
 const OPENING = Math.asin(6.8 / ROTUNDA_R);
 
-const ring = (angle: number, r: number) => [Math.sin(angle) * r, Math.cos(angle) * r + CROSSING_Z] as const;
+const ring = rotundaRing;
 
 /**
  * A guardian stand-in: a robed figure with broad shoulders and a hood, resting both hands on a
@@ -186,14 +204,14 @@ export default function Rotunda({ lite }: { lite: boolean }) {
       <Instances limit={MARKER_ANGLES.length} material={materials.relief}>
         <boxGeometry args={[1.3, 1.1, 0.95]} />
         {MARKER_ANGLES.map((a) => {
-          const [x, z] = ring(a, LIFT_R + 0.85);
+          const [x, z] = ring(a, LIFT_MARKER_RING);
           return <Instance key={a} position={[x, FLOOR_Y + 0.34 + 0.55, z]} rotation={[0, a, 0]} />;
         })}
       </Instances>
       <Instances limit={MARKER_ANGLES.length} material={materials.gold}>
         <boxGeometry args={[1.42, 0.1, 1.07]} />
         {MARKER_ANGLES.map((a) => {
-          const [x, z] = ring(a, LIFT_R + 0.85);
+          const [x, z] = ring(a, LIFT_MARKER_RING);
           return <Instance key={a} position={[x, FLOOR_Y + 0.34 + 1.15, z]} rotation={[0, a, 0]} />;
         })}
       </Instances>
@@ -264,9 +282,9 @@ export default function Rotunda({ lite }: { lite: boolean }) {
 
       {/* Guardian statues (stand-ins), taller than the gallery rail */}
       {STATUE_ANGLES.map((a) => {
-        const [x, z] = ring(a, ROTUNDA_R - 1.15);
+        const [x, z] = ring(a, STATUE_RING);
         return (
-          <group key={a} position={[x, FLOOR_Y, z]} rotation={[0, a + Math.PI, 0]} scale={1.35}>
+          <group key={a} position={[x, FLOOR_Y, z]} rotation={[0, a + Math.PI, 0]} scale={STATUE_SCALE}>
             <mesh position={[0, 0.4, 0]} material={materials.relief}>
               <cylinderGeometry args={[1.55, 1.7, 0.8, 32]} />
             </mesh>
@@ -295,7 +313,7 @@ export default function Rotunda({ lite }: { lite: boolean }) {
       {/* The throne, just past the lift: a stepped dais, an empty seat, a back that climbs */}
       <group position={[0, FLOOR_Y, THRONE_Z]}>
         {[
-          [7, 3.6, 0.4],
+          [THRONE_DAIS.width, THRONE_DAIS.depth, 0.4],
           [5.8, 2.8, 0.4],
           [4.6, 2.0, 0.4],
         ].map(([w, d, h], k) => (

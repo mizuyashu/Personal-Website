@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { ui } from "@/content/site";
 import { chapters } from "@/content/chapters";
 import { CORRIDOR } from "@/lib/corridor";
@@ -9,6 +9,7 @@ import { setAutoQuality, setQuality, useQuality } from "@/lib/quality";
 import { startRoam, stopRoam, useRoam } from "@/lib/roam";
 import { journey, scrollToChapter } from "@/lib/scroll";
 import { cameraPose } from "@/components/canvas/layout";
+import { useEscapeToClose } from "@/lib/focus";
 import styles from "./ui.module.css";
 
 /** Free roam starts in the cathedral: from where the guided camera stands if it's there, else at the entry. */
@@ -30,11 +31,15 @@ export default function CornerMenu() {
   const exploreName = useId();
   const panelId = useId();
   const name = useId();
+  const root = useRef<HTMLDivElement>(null);
+  const toggle = useRef<HTMLButtonElement>(null);
+  useEscapeToClose(open, () => setOpen(false), root, toggle);
   const autoLabel = `${ui.qualityAuto} (${quality === "full" ? ui.qualityFull : ui.qualityLite})`;
 
   return (
-    <div className={`${styles.corner} ${styles.topRight}`}>
+    <div ref={root} className={`${styles.corner} ${styles.topRight}`}>
       <button
+          ref={toggle}
           type="button"
           className={styles.button}
           aria-expanded={open}

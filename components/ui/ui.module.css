@@ -17,6 +17,8 @@
   bottom: 1rem;
   right: 1rem;
   align-items: flex-end;
+  /* The toggle comes first in the DOM (keyboard order) but sits at the bottom. */
+  flex-direction: column-reverse;
 }
 
 .button {

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- The master symbol (8-point compass star in a ring), drawn heavier to read at 16 px. -->
+  <circle cx="32" cy="32" r="31" fill="#0B0A0A"/>
+  <circle cx="32" cy="32" r="22.5" fill="none" stroke="#F2C45A" stroke-width="3"/>
+  <polygon points="32.00,2.00 34.49,25.99 44.02,19.98 38.01,29.51 62.00,32.00 38.01,34.49 44.02,44.02 34.49,38.01 32.00,62.00 29.51,38.01 19.98,44.02 25.99,34.49 2.00,32.00 25.99,29.51 19.98,19.98 29.51,25.99" fill="#F2C45A"/>
+  <circle cx="32" cy="32" r="2.6" fill="#FFF6E3"/>
+</svg>

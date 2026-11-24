@@ -11,7 +11,22 @@ import planeVert from "@/shaders/plane.vert.glsl";
 import shaftFrag from "@/shaders/shaft.frag.glsl";
 import towerVert from "@/shaders/tower.vert.glsl";
 import towerFrag from "@/shaders/tower.frag.glsl";
-import { CATHEDRAL_START, CROSSING_Z, FLOOR_Y, LIFT_R, NARTHEX, NAVE_HALF, ROTUNDA_R, ROTUNDA_TOP, SKYLIGHT_Y, VAULT_Y, seededRandom } from "../layout";
+import {
+  CATHEDRAL_START,
+  COLONNADE_Z,
+  CROSSING_Z,
+  FLOOR_Y,
+  LIFT_R,
+  NARTHEX,
+  NAVE_HALF,
+  PORTAL_RADIUS,
+  PORTAL_Z,
+  ROTUNDA_R,
+  ROTUNDA_TOP,
+  SKYLIGHT_Y,
+  VAULT_Y,
+  seededRandom,
+} from "../layout";
 import { makeFloorTexture, makeMoteMaterialMap } from "./textures";
 
 // Chapter II opening: the cathedral. You come along the narthex and round the corner (left)
@@ -29,11 +44,10 @@ const NAVE_END_Z = CROSSING_Z + Math.sqrt(ROTUNDA_R ** 2 - NAVE_HALF ** 2);
 const AISLE_END_Z = CROSSING_Z + Math.sqrt(ROTUNDA_R ** 2 - AISLE_X ** 2);
 const STOREY = 8;
 
-const PORTAL_Z = [-6.5, -9.5, -12.5, -15.5]; // chapters II–V
-const PORTAL_RADIUS = 2.6;
+// PORTAL_Z (chapters II–V), PORTAL_RADIUS and the colonnade live in layout.ts (free roam walks round them).
 const PORTAL_SPRING = FLOOR_Y + 3.6;
 
-const colonnadeZ = Array.from({ length: 8 }, (_, i) => -4 - i * 1.75);
+const colonnadeZ = COLONNADE_Z;
 const ribZ = colonnadeZ;
 const WINDOW_Z = colonnadeZ.slice(0, -1).map((z) => z - 0.875);
 

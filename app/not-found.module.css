@@ -1,0 +1,123 @@
+/* The cat 404 (app/not-found.tsx), over the void. */
+.page {
+  position: relative;
+  z-index: 1;
+  min-height: 100lvh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.5rem;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  background: radial-gradient(ellipse 60% 55% at 50% 42%, color-mix(in srgb, var(--navy) 55%, transparent), transparent 70%);
+}
+
+.cat {
+  width: min(56vw, 18rem);
+  height: auto;
+  margin-bottom: 0.5rem;
+  overflow: visible;
+}
+
+.line {
+  stroke: var(--gold);
+  stroke-width: 0.8;
+  stroke-linecap: round;
+  opacity: 0.55;
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  animation: draw 0.9s ease-out forwards;
+  animation-delay: calc(0.3s + var(--i) * 0.09s);
+}
+
+.star {
+  fill: var(--ivory);
+  filter: drop-shadow(0 0 2px var(--ivory));
+  animation: twinkle 3.2s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -0.41s);
+}
+
+.eye {
+  fill: var(--gold);
+  filter: drop-shadow(0 0 3px var(--gold));
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.code {
+  margin: 0;
+  font-family: var(--font-stem);
+  font-size: 0.8rem;
+  letter-spacing: 0.4em;
+  color: var(--gold);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: clamp(1.75rem, 5vw, 3rem);
+  letter-spacing: 0.06em;
+  line-height: 1.15;
+  text-shadow: 0 0 24px color-mix(in srgb, var(--gold) 35%, transparent);
+}
+
+.text {
+  margin: 0.25rem 0 1.25rem;
+  max-width: 30rem;
+  font-style: italic;
+  color: var(--lavender);
+}
+
+.back {
+  display: inline-flex;
+  gap: 0.6em;
+  align-items: center;
+  padding: 0.7rem 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--gold) 60%, transparent);
+  font-family: var(--font-stem);
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ivory);
+  text-decoration: none;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.back:hover,
+.back:focus-visible {
+  background: color-mix(in srgb, var(--gold) 14%, transparent);
+  border-color: var(--gold);
+}
+
+.back:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* Reduced motion: drawn and still (globals.css shortens animations; this shows them finished). */
+@media (prefers-reduced-motion: reduce) {
+  .line {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+  .star {
+    animation: none;
+  }
+}

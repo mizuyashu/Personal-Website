@@ -1,10 +1,11 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { chapters } from "@/content/chapters";
 import { ui } from "@/content/site";
 import { useReducedMotion } from "@/lib/motion";
 import { scrollToChapter, useActiveChapter } from "@/lib/scroll";
+import { useEscapeToClose } from "@/lib/focus";
 import CompassStar from "./CompassStar";
 import styles from "./ui.module.css";
 
@@ -14,9 +15,25 @@ export default function CompassNav() {
   const active = useActiveChapter();
   const reducedMotion = useReducedMotion();
   const listId = useId();
+  const root = useRef<HTMLElement>(null);
+  const toggle = useRef<HTMLButtonElement>(null);
+  useEscapeToClose(open, () => setOpen(false), root, toggle);
 
   return (
-    <nav className={`${styles.corner} ${styles.bottomRight}`} aria-label={ui.compass}>
+    <nav ref={root} className={`${styles.corner} ${styles.bottomRight}`} aria-label={ui.compass}>
+      <button
+        ref={toggle}
+        type="button"
+        className={styles.compassButton}
+        data-compass-toggle
+        aria-expanded={open}
+        aria-controls={listId}
+        aria-label={open ? ui.closeCompass : ui.compass}
+        onClick={() => setOpen(!open)}
+      >
+        <CompassStar className={styles.compassIcon} />
+      </button>
+      {/* After the toggle in the DOM (Tab goes toggle → chapters); shown above it (ui.module.css). */}
       {open && (
         <ol id={listId} className={`${styles.panel} ${styles.chapterList}`}>
           {chapters.map((chapter, i) => (
@@ -37,17 +54,6 @@ export default function CompassNav() {
           ))}
         </ol>
       )}
-      <button
-        type="button"
-        className={styles.compassButton}
-        data-compass-toggle
-        aria-expanded={open}
-        aria-controls={listId}
-        aria-label={open ? ui.closeCompass : ui.compass}
-        onClick={() => setOpen(!open)}
-      >
-        <CompassStar className={styles.compassIcon} />
-      </button>
     </nav>
   );
 }

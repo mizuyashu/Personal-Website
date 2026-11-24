@@ -2,12 +2,14 @@
 
 import { useSyncExternalStore } from "react";
 import { gsap, ScrollSmoother } from "@/lib/gsap";
+import { FLOOR_OBSTACLES } from "@/components/canvas/layout";
 
 // Free roam (docs/vision.md §19): instead of the guided, scroll-driven camera, the visitor walks
 // the cathedral themselves: the narthex, the nave and aisles, the rotunda. Guided is the default.
 // The camera blends between the guided pose and the roaming one (`roam.t`); while roaming the
 // page doesn't scroll and the journey position holds (so the cathedral stays on screen).
-// Walls only for now: columns, statues and the throne don't block yet.
+// Walls bound the walk; columns, statue plinths and the throne's dais block it too, and you
+// slide round them (layout.ts FLOOR_OBSTACLES). No walkable gallery yet.
 
 export const roam = {
   active: false,
@@ -41,6 +43,53 @@ function walkable(x: number, z: number) {
   );
 }
 
+/** How close the eye may come to anything solid (world units). */
+const BODY = 0.3;
+
+/**
+ * Push a point out of every obstacle (circles and boxes grown by BODY), along the shortest way
+ * out, so walking into a column slides you round it instead of stopping you dead. Two passes
+ * settle the rare spot where two footprints nearly touch.
+ */
+function clearOfObstacles(x: number, z: number): [number, number] {
+  for (let pass = 0; pass < 2; pass++) {
+    for (const c of FLOOR_OBSTACLES.circles) {
+      const dx = x - c.x;
+      const dz = z - c.z;
+      const min = c.r + BODY;
+      const d = Math.hypot(dx, dz);
+      if (d >= min) continue;
+      if (d < 1e-6) {
+        z = c.z + min;
+      } else {
+        x = c.x + (dx / d) * min;
+        z = c.z + (dz / d) * min;
+      }
+    }
+    for (const b of FLOOR_OBSTACLES.boxes) {
+      const left = x - (b.minX - BODY);
+      const right = b.maxX + BODY - x;
+      const back = z - (b.minZ - BODY);
+      const front = b.maxZ + BODY - z;
+      if (left <= 0 || right <= 0 || back <= 0 || front <= 0) continue;
+      const least = Math.min(left, right, back, front);
+      if (least === left) x = b.minX - BODY;
+      else if (least === right) x = b.maxX + BODY;
+      else if (least === back) z = b.minZ - BODY;
+      else z = b.maxZ + BODY;
+    }
+  }
+  return [x, z];
+}
+
+/** Inside any obstacle (after pushing out, only where two footprints pinch a gap shut). */
+function blocked(x: number, z: number) {
+  return (
+    FLOOR_OBSTACLES.circles.some((c) => Math.hypot(x - c.x, z - c.z) < c.r + BODY - 1e-3) ||
+    FLOOR_OBSTACLES.boxes.some((b) => x > b.minX - BODY + 1e-3 && x < b.maxX + BODY - 1e-3 && z > b.minZ - BODY + 1e-3 && z < b.maxZ + BODY - 1e-3)
+  );
+}
+
 const WALK_SPEED = 4.2; // units per second
 const TURN_SPEED = 1.6; // radians per second
 
@@ -55,11 +104,20 @@ export function stepRoam(dt: number) {
   const dx = (fx * roam.forward + sx * roam.strafe) * WALK_SPEED * dt;
   const dz = (fz * roam.forward + sz * roam.strafe) * WALK_SPEED * dt;
   // Slide along walls: try the full move, then each axis alone.
-  if (walkable(roam.x + dx, roam.z + dz)) {
-    roam.x += dx;
-    roam.z += dz;
-  } else if (walkable(roam.x + dx, roam.z)) roam.x += dx;
-  else if (walkable(roam.x, roam.z + dz)) roam.z += dz;
+  let x = roam.x;
+  let z = roam.z;
+  if (walkable(x + dx, z + dz)) {
+    x += dx;
+    z += dz;
+  } else if (walkable(x + dx, z)) x += dx;
+  else if (walkable(x, z + dz)) z += dz;
+  // Then slide round whatever stands on the floor; if that would push through a wall or into the
+  // next footprint (a pinched gap), stay put.
+  const [cx, cz] = clearOfObstacles(x, z);
+  if (walkable(cx, cz) && !blocked(cx, cz)) {
+    roam.x = cx;
+    roam.z = cz;
+  }
 }
 
 /** Look around (mouse / touch drag, right stick). */
@@ -96,6 +154,8 @@ export function startRoam(from: { x: number; z: number; yaw: number; pitch: numb
   roam.z = walkable(from.x, from.z) ? from.z : -0.6;
   roam.yaw = walkable(from.x, from.z) ? from.yaw : -Math.PI / 2;
   roam.pitch = Math.max(-0.9, Math.min(1.35, from.pitch));
+  const [cx, cz] = clearOfObstacles(roam.x, roam.z);
+  if (walkable(cx, cz)) [roam.x, roam.z] = [cx, cz];
   roam.forward = roam.turn = roam.strafe = 0;
   roam.active = true;
   ScrollSmoother.get()?.paused(true);

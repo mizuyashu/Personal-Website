@@ -57,3 +57,14 @@ export const medallionCopy = {
   hintDesktop: "Hold Space or M, or click and hold",
   hintTouch: "Hold, or tap again and again",
 } as const;
+
+// The 404 page (app/not-found.tsx): a cat drawn as a constellation, waiting in the void.
+// The wording is a placeholder Michael can change; the cat's name joins it once it's known.
+export const notFoundCopy = {
+  code: "404",
+  title: "Nothing here but the cat",
+  // TODO(content): the cat's name could go here ("Only <name> wandered this far.").
+  text: "This path leads off the map. Only the cat wandered this far, and even the cat is made of stars.",
+  back: "Return to the journey",
+  label: "A cat drawn in stars",
+} as const;

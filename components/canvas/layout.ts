@@ -36,6 +36,69 @@ export const NARTHEX = { left: -28, right: 6.8, front: -3, back: 1.8, spring: 5,
 export const SUBPAGE_SPACE = { y: 260, eye: 14 };
 /** The great lift: massive, as if giants once used it. */
 export const LIFT_R = 3.6;
+
+// What stands on the cathedral floor (shared by the scenes that draw it and by free roam, which
+// walks round it: lib/roam.ts).
+/** The nave's colonnade (scenes/Arches.tsx): a column each side at these z. */
+export const COLONNADE_Z = Array.from({ length: 8 }, (_, i) => -4 - i * 1.75);
+/** The portal arches for chapters II–V across the nave, and their columns' distance from the axis. */
+export const PORTAL_Z = [-6.5, -9.5, -12.5, -15.5];
+export const PORTAL_RADIUS = 2.6;
+/** The rotunda's ground colonnade (scenes/Rotunda.tsx): 12 columns round this ring. */
+export const ROTUNDA_COLUMN_RING = 8.6;
+export const ROTUNDA_COLUMN_ANGLES = Array.from({ length: 12 }, (_, k) => Math.PI / 12 + (k * Math.PI) / 6);
+/** Guardian statues between the columns (angle 0 = toward the nave), on plinths of this radius. */
+export const STATUE_ANGLES = [1.3, 1.95, 2.55, -1.3, -1.95, -2.55];
+export const STATUE_RING = ROTUNDA_R - 1.15;
+export const STATUE_SCALE = 1.35;
+/** The carved markers round the lift's pit (blocks about 1.4 × 1.1, chest-high). */
+export const LIFT_MARKER_ANGLES = Array.from({ length: 8 }, (_, k) => Math.PI / 8 + (k * Math.PI) / 4);
+export const LIFT_MARKER_RING = LIFT_R + 0.85;
+/** The throne's dais (its widest step), just past the lift. */
+export const THRONE_Z = CROSSING_Z - 6.6;
+export const THRONE_DAIS = { width: 7, depth: 3.6 };
+
+/** A point on a ring round the rotunda's centre (angle 0 = toward the nave, +z). */
+export function rotundaRing(angle: number, r: number) {
+  return [Math.sin(angle) * r, Math.cos(angle) * r + CROSSING_Z] as const;
+}
+
+/**
+ * Footprints free roam can't walk through (world x/z): circles round columns and statue plinths,
+ * boxes round the throne. Columns are sized to their moulded bases (the plinths under them are
+ * ankle-high, and sizing to those would close the colonnade: you can still slip between columns
+ * into the aisles); statues to their plinths, which reach the waist. The lift is a floor: walk onto it.
+ */
+export const FLOOR_OBSTACLES = {
+  circles: [
+    // Nave columns: bases 1.5 × r = 0.45 (1.75 apart, so a gap stays between them).
+    ...COLONNADE_Z.flatMap((z) => [-1, 1].map((side) => ({ x: side * NAVE_HALF, z, r: 0.45 }))),
+    // Portal columns: bases 1.5 × r = 0.33.
+    ...PORTAL_Z.flatMap((z) => [-1, 1].map((side) => ({ x: side * PORTAL_RADIUS, z, r: 0.33 }))),
+    ...ROTUNDA_COLUMN_ANGLES.map((a) => {
+      const [x, z] = rotundaRing(a, ROTUNDA_COLUMN_RING);
+      return { x, z, r: 0.36 };
+    }),
+    // Lift markers: about half their diagonal (gaps between them stay walkable).
+    ...LIFT_MARKER_ANGLES.map((a) => {
+      const [x, z] = rotundaRing(a, LIFT_MARKER_RING);
+      return { x, z, r: 0.75 };
+    }),
+    // Statue plinths: radius 1.7 × scale.
+    ...STATUE_ANGLES.map((a) => {
+      const [x, z] = rotundaRing(a, STATUE_RING);
+      return { x, z, r: 1.7 * STATUE_SCALE };
+    }),
+  ],
+  boxes: [
+    {
+      minX: -THRONE_DAIS.width / 2,
+      maxX: THRONE_DAIS.width / 2,
+      minZ: THRONE_Z - THRONE_DAIS.depth / 2,
+      maxZ: THRONE_Z + THRONE_DAIS.depth / 2,
+    },
+  ],
+};
 /** The skylight is the whole top of the tower: overwhelmingly high, like flying at the sun. */
 export const SKYLIGHT_SIZE = NAVE_HALF * 2;
 export const SKYLIGHT_Y = 110;

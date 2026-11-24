@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, type CSSProperties } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { about, aboutCopy, aboutPart } from "@/content/about";
 import { education } from "@/content/education";
@@ -11,6 +11,7 @@ import { ScrollSmoother } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/motion";
 import { cssVar } from "@/lib/palette";
 import { closeView, openView } from "@/lib/view";
+import { focusQuietly, restoreFocus } from "@/lib/focus";
 import styles from "./SubPage.module.css";
 
 type Props = { kind: "project" | "year" | "about"; id: string; mode: "modal" | "page" };
@@ -32,6 +33,19 @@ export default function SubPage({ kind, id, mode }: Props) {
   const project = kind === "project" ? projects.find((p) => p.id === id) : undefined;
   const year = kind === "year" ? education.timeline.find((t) => t.id === id) : undefined;
   const part = kind === "about" ? aboutPart(id) : undefined;
+
+  // Keyboard focus: into the page on open (its back button), and back to what opened it (the
+  // card or "See more" on the journey) on close, once the journey shows again. Declared before
+  // openView's effect: that hides the journey (instantly with reduced motion), which would blur
+  // the opener before it could be noted.
+  const backButton = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    const opener = document.activeElement;
+    focusQuietly(backButton.current);
+    return () => {
+      if (mode === "modal") restoreFocus(opener);
+    };
+  }, [mode]);
 
   useEffect(() => {
     openView({ kind, id }, mode === "page" || reducedMotion);
@@ -66,7 +80,7 @@ export default function SubPage({ kind, id, mode }: Props) {
   return (
     <div className={styles.page} data-kind={kind} data-instant={instant} role="dialog" aria-modal={mode === "modal"} aria-label={project?.title ?? year?.when ?? part?.title}>
       <div className={styles.panel} data-own-scroll>
-        <button type="button" className={styles.back} onClick={close}>
+        <button ref={backButton} type="button" className={styles.back} onClick={close}>
           <span aria-hidden>←</span> {part ? aboutCopy.back : education.yearPage.back} <kbd>Esc</kbd>
         </button>
 
